@@ -4,6 +4,8 @@ using UnityEditor;
 using JetBrains.Annotations;
 using System.Linq;
 using System;
+using UnityEngine.Experimental.Rendering;
+using ReferenceTable;
 
 [Serializable]
 public class DoorInfo
@@ -29,27 +31,60 @@ public class Corridor
 
 public class RoomGenerator
 {
-	public List<RoomPreset> RoomPresetPrefabs = new List<RoomPreset>();
+	public List<RoomInfo> roomPresets = new List<RoomInfo>();
 	public Vector2 mapSize = new Vector2(100, 100);
 	public int roomCount = 5;
 
 	public List<RoomInfo> rooms = new List<RoomInfo>();
 	public List<Rect> rects = new List<Rect>();
+	public Queue<DoorInfo> openedDoors = new Queue<DoorInfo>();
 
-	public void GenerateRooms()
+
+	public void LoadPresetData(int mapId)
 	{
-
-		rooms.Clear();
-		RoomPreset defaultRoom = RoomPresetPrefabs.First();
-
-		//RoomInfo roomInfo = defaultRoom.GenerateRoomInfo();
-		//AddRoom(roomInfo);
+		List<RefMap> refMaps = RefDataManager.Instance.GetRefDatas<RefMap>();
+		List<RefMap> maps = refMaps.FindAll(x => x.map_id == mapId);
+		roomPresets.Clear();
+		foreach (var map in maps)
+		{
+			string preset_key = $"RoomPreset/{map.room_preset}";
+			RoomInfo preset = JsonLoader.LoadJsonFromResources<RoomInfo>(preset_key);
+			roomPresets.Add(preset);
+		}
 	}
 
-	public void AddRoom(RoomInfo _roomInfo)
+	public void GenerateRooms(int mapId)
 	{
+		LoadPresetData(mapId);
+		rooms.Clear();
+		RoomInfo defaultRoom = roomPresets.First();
+		AddRoom(defaultRoom);
+		int maxLoop = 10000;
+		int loopCount = 0;
+		while(rooms.Count < roomCount)
+		{
+			if(loopCount > maxLoop)
+			{
+				Debug.LogWarning("방 생성 실패: 최대 반복 횟수 초과");
+				break;
+			}
+			loopCount++;
+
+			RoomInfo randomRoom = roomPresets[UnityEngine.Random.Range(0, roomPresets.Count)];
+
+			AddRoom(randomRoom);
+		}
+	}
+
+	public bool AddRoom(RoomInfo _roomInfo)
+	{
+		if(IsOverlapping(_roomInfo))
+		{
+			return false;
+		}
 		rooms.Add(_roomInfo);
 		rects.AddRange(_roomInfo.rect);
+		return true;
 	}
 
 	bool IsOverlapping(RoomInfo room)
@@ -83,24 +118,16 @@ public class MapManager : MonoBehaviour
 {
 	public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
 	RoomGenerator generator = new RoomGenerator();
+	public int mapId = 1;
 
 	void Start()
 	{
-		generator.RoomPresetPrefabs.Clear();
-		foreach (var prefab in RoomPresetPrefabs)
-		{
-			RoomPreset roomPreset = prefab.GetComponent<RoomPreset>();
-			if (roomPreset != null)
-			{
-				generator.RoomPresetPrefabs.Add(roomPreset);
-			}
-		}
-		generator.GenerateRooms();
+		generator.GenerateRooms(mapId);
 	}
 
 	public void GenerateRoomsInEditor()
 	{
-		generator.GenerateRooms();
+		generator.GenerateRooms(mapId);
 	}
 
 
