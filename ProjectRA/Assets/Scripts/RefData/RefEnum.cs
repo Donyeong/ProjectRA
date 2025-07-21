@@ -18,4 +18,17 @@ namespace ReferenceTable
         // map
         normal = 1,
     }
+    
+    public enum eItemType
+    {
+        
+        // map
+        small = 1,
+        
+        // map
+        medium = 2,
+        
+        // map
+        big = 3,
+    }
 }

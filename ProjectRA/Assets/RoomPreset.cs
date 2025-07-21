@@ -7,12 +7,11 @@ using UnityEngine.Rendering;
 
 public class RoomPreset : MonoBehaviour
 {
-	public string preset_key;
 	[TextArea(5, 20)]
 	public string jsonInfo;
 	public string GenerateRoomInfo()
 	{
-		RoomInfo roomInfo = new RoomInfo();
+		RoomPresetInfo roomInfo = new RoomPresetInfo();
 
 		RoomPresetDoor[] doors = GetComponentsInChildren<RoomPresetDoor>();
 
@@ -36,16 +35,20 @@ public class RoomPreset : MonoBehaviour
 		RoomPresetArea[] area = GetComponentsInChildren<RoomPresetArea>();
 		foreach (RoomPresetArea areaItem in area)
 		{
-			Rect rect = new Rect(
-				areaItem.transform.position.x - areaItem.transform.localScale.x / 2,
-				areaItem.transform.position.z - areaItem.transform.localScale.z / 2,
+			Vector3 center = new Vector3(
+				areaItem.transform.position.x,
+				areaItem.transform.position.y,
+				areaItem.transform.position.z
+			);
+			Vector3 size = new Vector3(
 				areaItem.transform.localScale.x,
+				areaItem.transform.localScale.y,
 				areaItem.transform.localScale.z
 			);
-			roomInfo.rect.Add(rect);
+			Bounds bound = new Bounds(center, size);
+			roomInfo.bounds.Add(bound);
 		}
-		roomInfo.preset_key = preset_key;
-
+		roomInfo.preset_key = gameObject.name;
 		string jsonRoomInfo = JsonUtility.ToJson(roomInfo, true);
 
 		return jsonRoomInfo;
@@ -65,7 +68,7 @@ public class RoomPresetEditor : Editor
 			roomPreset.jsonInfo = roomPreset.GenerateRoomInfo();
 
 			string folderPath = "Assets/Resources/RoomPresets";
-			string fileName = roomPreset.preset_key + ".json";
+			string fileName = roomPreset.gameObject.name + ".json";
 			string fullPath = Path.Combine(folderPath, fileName);
 
 			// 폴더가 없으면 생성
@@ -112,7 +115,7 @@ public class RoomPresetJsonGenerator
 
 			string jsonRoomInfo = roomPreset.GenerateRoomInfo();
 			string folderPath = "Assets/Resources/RoomPresets";
-			string fileName = roomPreset.preset_key + ".json";
+			string fileName = obj.name + ".json";
 			string fullPath = Path.Combine(folderPath, fileName);
 
 			if (!Directory.Exists(folderPath))

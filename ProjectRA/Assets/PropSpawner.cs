@@ -1,17 +1,22 @@
+using ReferenceTable;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoomPresetArea : MonoBehaviour
+public class PropSpawner : MonoBehaviour
 {
+	public eItemType itemType = eItemType.small;
 	void OnDrawGizmos()
 	{
 		MapManager mapManager = MapManager.Instance;
-		if(mapManager != null && !mapManager.drawMapGizmos)
+		if (mapManager != null && !mapManager.drawPropGizmos)
 		{
 			return;
 		}
-		Gizmos.color = new Color(0, 1, 1, 0.2f); // 시안색, 30% 투명
+		Gizmos.color = new Color(1, 0, 0, 0.6f); // 시안색, 30% 투명
+
+		float scale = 1.0f;
+
 		Gizmos.DrawCube(transform.position, transform.rotation * transform.localScale);
 	}
 }

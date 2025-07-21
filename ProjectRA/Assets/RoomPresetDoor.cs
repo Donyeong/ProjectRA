@@ -10,6 +10,11 @@ public class RoomPresetDoor : MonoBehaviour
 
 	void OnDrawGizmos()
 	{
+		MapManager mapManager = MapManager.Instance;
+		if (mapManager != null && !mapManager.drawMapGizmos)
+		{
+			return;
+		}
 		Color gizmoColor;
 		if (spawnChance >= 0.7f)
 			gizmoColor = Color.green;

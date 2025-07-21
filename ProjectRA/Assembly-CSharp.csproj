@@ -101,6 +101,7 @@
     <Compile Include="Assets\Scripts\MapManager.cs" />
     <Compile Include="Assets\Scripts\EventBus.cs" />
     <Compile Include="Assets\Scripts\RefDataLogic\RefDataManager.cs" />
+    <Compile Include="Assets\PropSpawner.cs" />
     <Compile Include="Assets\Scripts\LobbyManager.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\RefDataLogic\RefDataItem.cs" />
