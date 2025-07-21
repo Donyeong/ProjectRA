@@ -1,0 +1,237 @@
+using Mirror;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using UnityEngine;
+using Utp;
+
+public class RANetworkManager : NetworkManager
+{
+	public TMP_Text textRoomCode;
+	public static RANetworkManager _instance;
+	public static RANetworkManager instance
+		{
+		get
+		{
+			if (_instance == null)
+			{
+				_instance = FindObjectOfType<RANetworkManager>();
+			}
+			return _instance;
+		}
+	}
+	/// <summary>
+	/// The local player object that spawns in.
+	/// </summary>
+	public RAPlayer localPlayer;
+	private string m_SessionId = "";
+	private string m_Username;
+	private string m_UserId;
+
+	/// <summary>
+	/// Flag to determine if the user is logged into the backend.
+	/// </summary>
+	public bool isLoggedIn = false;
+
+	/// <summary>
+	/// List of players currently connected to the server.
+	/// </summary>
+	private List<RAPlayer> m_Players;
+
+	private UtpTransport utpTransport;
+
+	private string relayJoinCode;
+
+	public override void Awake()
+	{
+		base.Awake();
+		m_Players = new List<RAPlayer>();
+
+		m_Username = SystemInfo.deviceName;
+		utpTransport = transport as UtpTransport;
+	}
+
+	public void StartHostGame(int maxPlayers, string regionId = null)
+	{
+		utpTransport.useRelay = true;
+		utpTransport.AllocateRelayServer(maxPlayers, regionId,
+		(string joinCode) =>
+		{
+			relayJoinCode = joinCode;
+			textRoomCode.SetText($"RoomCode {relayJoinCode}");
+
+			StartHost();
+			LobbyManager.Instance.CreateRoom(joinCode);
+		},
+		() =>
+		{
+			UtpLog.Error($"Failed to start a Relay host.");
+		});
+	}
+
+
+	public void JoinRelayServer(string _joinCode)
+	{
+		relayJoinCode = _joinCode;
+		utpTransport.useRelay = true;
+		utpTransport.ConfigureClientWithJoinCode(_joinCode,
+		() =>
+		{
+			StartClient();
+		},
+		() =>
+		{
+			UtpLog.Error($"Failed to join Relay server.");
+		});
+	}
+
+	public async void UnityLogin()
+	{
+		try
+		{
+			await UnityServices.InitializeAsync();
+			await AuthenticationService.Instance.SignInAnonymouslyAsync();
+			Debug.Log("Logged into Unity, player ID: " + AuthenticationService.Instance.PlayerId);
+			isLoggedIn = true;
+		}
+		catch (Exception e)
+		{
+			isLoggedIn = false;
+			Debug.Log(e);
+		}
+	}
+
+	private void Update()
+	{
+		if (NetworkManager.singleton.isNetworkActive)
+		{
+			if (localPlayer == null)
+			{
+				FindLocalPlayer();
+			}
+		}
+		else
+		{
+			localPlayer = null;
+			m_Players.Clear();
+		}
+	}
+
+
+	public override void OnStartServer()
+	{
+		base.OnStopServer();
+		Debug.Log("MyNetworkManager: Server Started!");
+
+		m_SessionId = System.Guid.NewGuid().ToString();
+
+		DungeonManager.Instance.eventBus.Publish(new DungeonEvent_DungeonStart());
+	}
+
+	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+	{
+		base.OnServerAddPlayer(conn);
+
+		foreach (KeyValuePair<uint, NetworkIdentity> kvp in NetworkServer.spawned)
+		{
+			RAPlayer comp = kvp.Value.GetComponent<RAPlayer>();
+
+			// Add to player list if new
+			if (comp != null && !m_Players.Contains(comp))
+			{
+				comp.sessionId = m_SessionId;
+				m_Players.Add(comp);
+				
+			}
+		}
+	}
+
+	public override void OnStopServer()
+	{
+		base.OnStopServer();
+		Debug.Log("MyNetworkManager: Server Stopped!");
+		m_SessionId = "";
+	}
+
+	public override void OnServerDisconnect(NetworkConnectionToClient conn)
+	{
+		base.OnServerDisconnect(conn);
+
+		Dictionary<uint, NetworkIdentity> spawnedPlayers = NetworkServer.spawned;
+
+		// Update players list on client disconnect
+		foreach (RAPlayer player in m_Players)
+		{
+			bool playerFound = false;
+
+			foreach (KeyValuePair<uint, NetworkIdentity> kvp in spawnedPlayers)
+			{
+				RAPlayer comp = kvp.Value.GetComponent<RAPlayer>();
+
+				// Verify the player is still in the match
+				if (comp != null && player == comp)
+				{
+					playerFound = true;
+					break;
+				}
+			}
+
+			if (!playerFound)
+			{
+				m_Players.Remove(player);
+				break;
+			}
+		}
+	}
+
+	public override void OnStopClient()
+	{
+		base.OnStopClient();
+
+		Debug.Log("MyNetworkManager: Left the Server!");
+
+		localPlayer = null;
+
+		m_SessionId = "";
+	}
+
+	public override void OnClientConnect()
+	{
+		base.OnClientConnect();
+		Debug.Log($"MyNetworkManager: {m_Username} Connected to Server!");
+	}
+
+	public override void OnClientDisconnect()
+	{
+		base.OnClientDisconnect();
+		Debug.Log("MyNetworkManager: Disconnected from Server!");
+	}
+
+	/// <summary>
+	/// Finds the local player if they are spawned in the scene.
+	/// </summary>
+	void FindLocalPlayer()
+	{
+		//Check to see if the player is loaded in yet
+		if (NetworkClient.localPlayer == null)
+			return;
+
+		localPlayer = NetworkClient.localPlayer.GetComponent<RAPlayer>();
+		CameraController.Instance.SetPlayer(RANetworkManager.instance.localPlayer);
+		// 사용 예시
+		SetLayerRecursively(localPlayer.gameObject, LayerMask.NameToLayer("LocalPlayer"));
+
+	}
+	void SetLayerRecursively(GameObject obj, int newLayer)
+	{
+		obj.layer = newLayer;
+		foreach (Transform child in obj.transform)
+		{
+			SetLayerRecursively(child.gameObject, newLayer);
+		}
+	}
+
+}
