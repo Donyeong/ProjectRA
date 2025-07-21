@@ -65,7 +65,20 @@ public class RoomGenerator
 		return false;
 	}
 }
-
+public class JsonLoader
+{
+	public static T LoadJsonFromResources<T>(string resourcePath)
+	{
+		// 확장자(.json)는 생략
+		TextAsset jsonText = Resources.Load<TextAsset>(resourcePath);
+		if (jsonText == null)
+		{
+			Debug.LogError($"리소스에서 {resourcePath}를 찾을 수 없습니다.");
+			return default;
+		}
+		return JsonUtility.FromJson<T>(jsonText.text);
+	}
+}
 public class MapManager : MonoBehaviour
 {
 	public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
