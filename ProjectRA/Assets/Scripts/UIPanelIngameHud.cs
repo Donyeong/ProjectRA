@@ -9,7 +9,7 @@ public class UIPanelIngameHud : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CGameManager.Instance.gameEventBus.AddListner<DungeonEvent_SellPlaceUpdate>(OnSellPlaceUpdate);
+        CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_SellPlaceUpdate>(OnSellPlaceUpdate);
     }
 
     // Update is called once per frame
@@ -18,7 +18,7 @@ public class UIPanelIngameHud : MonoBehaviour
         
     }
 
-    public void OnSellPlaceUpdate(DungeonEvent_SellPlaceUpdate e)
+    public void OnSellPlaceUpdate(GameRoomEvent_SellPlaceUpdate e)
 	{
         price.SetText(e.sellPlace.GetTotalPrice().ToString());
 	}

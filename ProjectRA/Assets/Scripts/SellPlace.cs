@@ -39,10 +39,10 @@ public class SellPlace : MonoBehaviour
 			RAPropCollider prop = other.gameObject.GetComponent<RAPropCollider>();
 			if (prop != null)
 			{
-				DungeonEvent_SellPlaceUpdate sellPlaceUpdate = new DungeonEvent_SellPlaceUpdate();
+				GameRoomEvent_SellPlaceUpdate sellPlaceUpdate = new GameRoomEvent_SellPlaceUpdate();
 				sellPlaceUpdate.sellPlace = this;
 
-				CGameManager.Instance.gameEventBus.Publish(sellPlaceUpdate);
+				CGameManager.Instance.roomEventBus.Publish(sellPlaceUpdate);
 			}
 		}
 	}
@@ -55,10 +55,10 @@ public class SellPlace : MonoBehaviour
 			RAPropCollider prop = other.gameObject.GetComponent<RAPropCollider>();
 			if (prop != null)
 			{
-				DungeonEvent_SellPlaceUpdate sellPlaceUpdate = new DungeonEvent_SellPlaceUpdate();
+				GameRoomEvent_SellPlaceUpdate sellPlaceUpdate = new GameRoomEvent_SellPlaceUpdate();
 				sellPlaceUpdate.sellPlace = this;
 
-				CGameManager.Instance.gameEventBus.Publish(sellPlaceUpdate);
+				CGameManager.Instance.roomEventBus.Publish(sellPlaceUpdate);
 			}
 		}
 	}
