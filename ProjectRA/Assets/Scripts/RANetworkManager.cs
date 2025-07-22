@@ -202,6 +202,7 @@ public class RANetworkManager : NetworkManager
 	{
 		base.OnClientConnect();
 		Debug.Log($"MyNetworkManager: {m_Username} Connected to Server!");
+		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
 	}
 
 	public override void OnClientDisconnect()

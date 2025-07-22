@@ -3,8 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ePropState
+{
+	Normal,
+	PickedUp,
+}
+
 public class RAProp : NetworkBehaviour
 {
+	public int hp;
+	public int maxHp;
 	public int price;
 	public float weight = 1;
 
@@ -15,12 +23,48 @@ public class RAProp : NetworkBehaviour
 
 	public bool isInit = false;
 
+	public ePropState propState = ePropState.Normal;
+
+	public List<RAPlayer> pickPlayers;
+
+	public bool selected = false; // 카메라로 아이템 바라봄(아웃라인 용도)
+	public Outline[] outlines = null;
+
 	public void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
 		if (rb == null)
 		{
 			Debug.LogError("RAProp requires a Rigidbody component.");
+		}
+	}
+
+	public void PickUp()
+	{
+	}
+	public void PickDown()
+	{
+	}
+
+	public void Select(bool itemSelected)
+	{
+		if(outlines == null)
+		{
+			outlines = GetComponentsInChildren<Outline>();
+		} else
+		{
+			if(outlines.Length == 0)
+			{
+				outlines = GetComponentsInChildren<Outline>();
+			}
+		}
+		selected = itemSelected;
+		if (outlines != null)
+		{
+			foreach (Outline outline in outlines)
+			{
+				outline.enabled = itemSelected;
+			}
 		}
 	}
 
@@ -46,5 +90,6 @@ public class RAProp : NetworkBehaviour
 		GameObject model = Instantiate(go, transform);
 		propCollider = model.GetComponent<RAPropCollider>();
 		propCollider.prop = this;
+		Select(false);
 	}
 }

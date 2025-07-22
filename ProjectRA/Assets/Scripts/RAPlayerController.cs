@@ -10,6 +10,9 @@ namespace RA {
 		public RAPlayer player;
 		public Rigidbody characterController;
 		public RAProp targetProp = null;
+
+		public RAProp viewProp = null;
+
 		public float propRange = 1;
 
 		public void Awake()
@@ -21,20 +24,39 @@ namespace RA {
 		public void PlayerInput()
 		{
 			RaycastHit hit;
+			bool isSelected = false;
 			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
 			{
 				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("PropCollider"))
 				{
-					// Prop 레이어에 있는 오브젝트를 클릭했을 때
-					if (Input.GetKeyDown(KeyCode.Mouse0))
+					RAPropCollider propCol = hit.collider.GetComponent<RAPropCollider>();
+					if (propCol != null)
 					{
-						// Prop 오브젝트를 잡아당기기
-						RAPropCollider propCol = hit.collider.GetComponent<RAPropCollider>();
-						if (propCol != null)
+						isSelected = true;
+						RAProp prop = propCol.prop;
+						if (viewProp != prop)
 						{
-							CmdPullOn(propCol.prop.GetComponent<NetworkIdentity>());
+							if (viewProp != null)
+							{
+								viewProp.Select(false);
+							}
+							viewProp = prop;
+							viewProp.Select(true);
+						}
+						// Prop 레이어에 있는 오브젝트를 클릭했을 때
+						if (Input.GetKeyDown(KeyCode.Mouse0))
+						{
+							CmdPullOn(prop.GetComponent<NetworkIdentity>());
 						}
 					}
+				}
+			}
+			if(!isSelected)
+			{
+				if (viewProp != null)
+				{
+					viewProp.Select(false);
+					viewProp = null;
 				}
 			}
 			if (Input.GetKeyUp(KeyCode.Mouse0))

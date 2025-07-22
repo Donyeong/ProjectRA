@@ -12,12 +12,14 @@ public class Intro : MonoBehaviour
 	{
 		RANetworkManager.instance.UnityLogin();
 		IntroMain();
+		RefDataManager.Instance.LoadRefData();
 	}
 
 
 	public void IntroMain()
 	{
 		SceneManager.LoadScene("Lobby");
+		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
 	}
 
 

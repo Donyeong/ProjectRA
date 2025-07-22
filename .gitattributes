@@ -5,3 +5,5 @@
 .dll filter=lfs diff=lfs merge=lfs -text
 .xml filter=lfs diff=lfs merge=lfs -text
 .anim filter=lfs diff=lfs merge=lfs -text
+.prefab filter=lfs diff=lfs merge=lfs -text
+.unity filter=lfs diff=lfs merge=lfs -text

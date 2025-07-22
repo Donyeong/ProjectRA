@@ -98,6 +98,12 @@ public class RAPLayerMovement : NetworkBehaviour
 			targetTransform.rotation = model.transform.rotation;
 			targetTransform.aimP = CameraController.Instance.viewDir;
 			CmdMovePosition(targetTransform.position, targetTransform.rotation, targetTransform.aimP);
+
+			bool isMove = input.magnitude > 0.001f;
+			Debug.Log(isMove);
+			player.playerAnimController.SetMove(isMove);
+			player.playerAnimController.SetRun(true);
+
 		}
 	}
 

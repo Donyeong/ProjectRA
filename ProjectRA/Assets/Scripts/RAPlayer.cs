@@ -29,11 +29,14 @@ public class RAPlayer : Actor
 
 	public Vector3 viewDir = Vector3.forward;
 
+	public PlayerAnimController playerAnimController;
+
 	private void Awake()
 	{
 		username = SystemInfo.deviceName;
 		platform = Application.platform.ToString();
 		ip = NetworkManager.singleton.networkAddress;
+		playerAnimController = GetComponentInChildren<PlayerAnimController>();
 	}
 
 	private void Start()

@@ -5,9 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class CMain : SingletonMono<CMain>
 {
-    void Start()
+	protected virtual void Awake()
+	{
+		base.Awake();
+	}
+
+	void Start()
     {
-        
+        UIPanelManager.Instance.ShowPanel<UIPanelLoading>();
     }
 
     // Update is called once per frame
@@ -18,6 +23,7 @@ public class CMain : SingletonMono<CMain>
 
     public void StartHost()
 	{
+		UIPanelManager.Instance.ShowPanel<UIPanelLoading>();
 		SceneManager.LoadScene("Game");
 		RANetworkManager.instance.StartHostGame(8);
 	}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1933097172992804348}
   - component: {fileID: 8641420966906845002}
   - component: {fileID: 6874053429942315647}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: PullLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,4 +153,3 @@ MonoBehaviour:
   point2: {x: 0, y: 0, z: 0}
   point3: {x: 0, y: 0, z: 0}
   vertexResolution: 12
-  noiseScale: {x: 0, y: 0}
