@@ -9,7 +9,7 @@ public class UIPanelIngameHud : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DungeonManager.Instance.eventBus.AddListner<DungeonEvent_SellPlaceUpdate>(OnSellPlaceUpdate);
+        CGameManager.Instance.gameEventBus.AddListner<DungeonEvent_SellPlaceUpdate>(OnSellPlaceUpdate);
     }
 
     // Update is called once per frame

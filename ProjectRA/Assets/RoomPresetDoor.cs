@@ -10,7 +10,7 @@ public class RoomPresetDoor : MonoBehaviour
 
 	void OnDrawGizmos()
 	{
-		MapManager mapManager = MapManager.Instance;
+		MapGenerator mapManager = MapGenerator.Instance;
 		if (mapManager != null && !mapManager.drawMapGizmos)
 		{
 			return;

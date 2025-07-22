@@ -17,7 +17,7 @@ public class UIPanelLobby : MonoBehaviour
 	}
 	public void OnClickHost()
 	{
-		Game.Instance.StartHost();
+		CMain.Instance.StartHost();
 	}
 
 	public void OnClickRefresh()

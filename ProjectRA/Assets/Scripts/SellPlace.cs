@@ -42,7 +42,7 @@ public class SellPlace : MonoBehaviour
 				DungeonEvent_SellPlaceUpdate sellPlaceUpdate = new DungeonEvent_SellPlaceUpdate();
 				sellPlaceUpdate.sellPlace = this;
 
-				DungeonManager.Instance.eventBus.Publish(sellPlaceUpdate);
+				CGameManager.Instance.gameEventBus.Publish(sellPlaceUpdate);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class SellPlace : MonoBehaviour
 				DungeonEvent_SellPlaceUpdate sellPlaceUpdate = new DungeonEvent_SellPlaceUpdate();
 				sellPlaceUpdate.sellPlace = this;
 
-				DungeonManager.Instance.eventBus.Publish(sellPlaceUpdate);
+				CGameManager.Instance.gameEventBus.Publish(sellPlaceUpdate);
 			}
 		}
 	}

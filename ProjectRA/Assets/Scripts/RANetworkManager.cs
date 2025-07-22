@@ -128,7 +128,7 @@ public class RANetworkManager : NetworkManager
 
 		m_SessionId = System.Guid.NewGuid().ToString();
 
-		DungeonManager.Instance.eventBus.Publish(new DungeonEvent_DungeonStart());
+		CGameManager.Instance.roomEventBus.Publish(new GameRoomEvent_RoomCreated());
 	}
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)

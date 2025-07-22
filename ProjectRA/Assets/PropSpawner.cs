@@ -8,7 +8,7 @@ public class PropSpawner : MonoBehaviour
 	public eItemType itemType = eItemType.small;
 	void OnDrawGizmos()
 	{
-		MapManager mapManager = MapManager.Instance;
+		MapGenerator mapManager = MapGenerator.Instance;
 		if (mapManager != null && !mapManager.drawPropGizmos)
 		{
 			return;

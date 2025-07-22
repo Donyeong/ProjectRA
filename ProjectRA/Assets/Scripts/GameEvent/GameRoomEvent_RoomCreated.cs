@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public abstract class DungeonEvent
+
+public class GameRoomEvent_RoomCreated : RoomEvent
 {
-	public DungeonEvent()
-	{
-	}
 }

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Game : SingletonMono<Game>
+public class CMain : SingletonMono<CMain>
 {
-    public EventBus<GameEvent> eventBus = new EventBus<GameEvent>();
-    // Start is called before the first frame update
     void Start()
     {
         

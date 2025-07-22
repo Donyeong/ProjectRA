@@ -31,7 +31,7 @@ public class LobbyRoomSlot : MonoBehaviour
     {
         if (lobby == null) return;
         Debug.Log("Join Lobby: " + lobby.Name + " with join code: " + joinCode);
-        Game.Instance.StartClient(joinCode);
+        CMain.Instance.StartClient(joinCode);
 
     }
 }
