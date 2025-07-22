@@ -13,9 +13,7 @@ public class PropSpawner : MonoBehaviour
 		{
 			return;
 		}
-		Gizmos.color = new Color(1, 0, 0, 0.6f); // 시안색, 30% 투명
-
-		float scale = 1.0f;
+		Gizmos.color = new Color(1, 0, 0, 0.6f);
 
 		Gizmos.DrawCube(transform.position, transform.rotation * transform.localScale);
 	}
