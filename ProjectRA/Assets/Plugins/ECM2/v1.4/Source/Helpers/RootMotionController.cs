@@ -100,15 +100,15 @@ namespace ECM2
             _rootMotionDeltaPosition = Vector3.zero;
             _rootMotionDeltaRotation = Quaternion.identity;
         }
-
+        
         /// <summary>
         /// If overriden, base method MUST be called.
-        /// </summary>v
-        /// 
+        /// </summary>
 
         public virtual void OnAnimatorMove()
         {
             // Accumulate root motion deltas between character updates 
+
             _rootMotionDeltaPosition += _animator.deltaPosition;
             _rootMotionDeltaRotation = _animator.deltaRotation * _rootMotionDeltaRotation;
         }

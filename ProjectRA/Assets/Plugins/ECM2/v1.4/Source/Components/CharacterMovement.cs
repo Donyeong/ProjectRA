@@ -374,7 +374,7 @@ namespace ECM2
     #endregion
 
     [RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
-    public class CharacterMovement : MonoBehaviour
+    public sealed class CharacterMovement : MonoBehaviour
     {
         #region ENUMS
 
@@ -553,25 +553,25 @@ namespace ECM2
         private Transform _rootTransform;
 
         [SerializeField, Tooltip("The root transform will be positioned at this offset from foot position.")]
-        private Vector3 _rootTransformOffset = new Vector3(0, 0.9f, 0);
+        private Vector3 _rootTransformOffset = new Vector3(0, 0, 0);
 
         [Space(15f)]
         [Tooltip("The Character's capsule collider radius.")]
         [SerializeField]
-        private float _radius = 0.35f;
+        private float _radius;
 
         [Tooltip("The Character's capsule collider height")]
         [SerializeField]
-        private float _height = 1.8f;
+        private float _height;
         
         [Space(15f)]
         [Tooltip("The maximum angle (in degrees) for a walkable surface.")]
         [SerializeField]
-        private float _slopeLimit = 45;
+        private float _slopeLimit;
 
         [Tooltip("The maximum height (in meters) for a valid step.")]
         [SerializeField]
-        private float _stepOffset = 0.35f;
+        private float _stepOffset;
 
         [Tooltip("Allow a Character to perch on the edge of a surface if the horizontal distance from the Character's position to the edge is closer than this.\n" +
                  "Note that characters will not fall off if they are within stepOffset of a walkable surface below.")]
@@ -586,7 +586,7 @@ namespace ECM2
         [Space(15f)]
         [Tooltip("If enabled, colliders with SlopeLimitBehaviour component will be able to override this slope limit.")]
         [SerializeField]
-        private bool _slopeLimitOverride = true;
+        private bool _slopeLimitOverride;
 
         [Tooltip("When enabled, will treat head collisions as if the character is using a shape with a flat top.")]
         [SerializeField]
@@ -1725,7 +1725,7 @@ namespace ECM2
         /// Cache and initialize required components.
         /// </summary>
 
-        protected virtual void CacheComponents()
+        private void CacheComponents()
         {
             _transform = GetComponent<Transform>();
 
@@ -1958,11 +1958,6 @@ namespace ECM2
         {
             if (otherCollider == _capsuleCollider || otherCollider.attachedRigidbody == rigidbody)
                 return true;
-
-            if( QueryCollision != null && QueryCollision(otherCollider) == false)
-            {
-                return true;
-            }
             
             if (_ignoredColliders.Contains(otherCollider))
                 return true;
@@ -3097,10 +3092,6 @@ namespace ECM2
         /// This refers to the process of smoothly sliding a moving entity along any obstacles encountered.
         /// Updates _probingPosition.
         /// </summary>
-        public delegate bool MoveCollisionQuery(Collider collider);
-
-        public MoveCollisionQuery QueryCollision = null;
-
 
         private void PerformMovement(float deltaTime)
         {
@@ -3205,10 +3196,6 @@ namespace ECM2
                     out CollisionResult collisionResult);
 
                 if (!collided)
-                    break;
-
-                if (collisionResult.collider.gameObject.layer == LayerMask.NameToLayer("Damageable")
-                || collisionResult.collider.gameObject.layer == LayerMask.NameToLayer("Shield"))
                     break;
 
                 // Apply displacement up to hit (near position) and update displacement with remaining displacement
@@ -4478,7 +4465,7 @@ namespace ECM2
         /// <param name="maxDegreesDelta">Change in rotation per second (Deg / s).</param>
         /// <param name="updateYawOnly">If True, the rotation will be performed on the Character's plane (defined by its up-axis).</param>
 
-        public virtual void RotateTowards(Vector3 worldDirection, float maxDegreesDelta, bool updateYawOnly = true)
+        public void RotateTowards(Vector3 worldDirection, float maxDegreesDelta, bool updateYawOnly = true)
         {
             Vector3 characterUp = transform.up;
 
@@ -4809,7 +4796,7 @@ namespace ECM2
 
         #region MONOBEHAVIOUR
 
-        protected virtual void Reset()
+        private void Reset()
         {
             SetDimensions(0.5f, 2.0f);
             SetPlaneConstraint(PlaneConstraint.None, Vector3.zero);
@@ -4828,7 +4815,7 @@ namespace ECM2
             _pushForceScale = 1.0f;
         }
 
-        protected virtual void OnValidate()
+        private void OnValidate()
         {
             SetDimensions(_radius, _height);
             SetPlaneConstraint(_planeConstraint, _constraintPlaneNormal);
@@ -4841,7 +4828,7 @@ namespace ECM2
             _advanced.OnValidate();
         }
 
-        protected virtual void Awake()
+        private void Awake()
         {
             CacheComponents();
 
@@ -4849,32 +4836,12 @@ namespace ECM2
             SetPlaneConstraint(_planeConstraint, _constraintPlaneNormal);
         }
 
-        protected virtual void OnEnable()
+        private void OnEnable()
         {
             updatedPosition = transform.position;
             updatedRotation = transform.rotation;
             
             UpdateCachedFields();
-        }
-
-        protected virtual void OnDisable()
-        {
-
-        }
-
-        protected virtual void Start()
-        {
-
-        }
-
-        protected virtual void OnTriggerEnter(Collider other)
-        {
-
-        }
-
-        protected virtual void OnTriggerExit(Collider other)
-        {
-
         }
 
 #if UNITY_EDITOR

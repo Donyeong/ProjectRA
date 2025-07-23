@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PullLine : MonoBehaviour
 {
+	public GameObject pointEffect;
 	public Vector3 point1;
 	public Vector3 point2;
 	public Vector3 point3;
@@ -42,5 +43,6 @@ public class PullLine : MonoBehaviour
 
 	lineRenderer.positionCount = pointPositions.Count;
 		lineRenderer.SetPositions(pointPositions.ToArray());
+		pointEffect.transform.position = point3;
 	}
 }

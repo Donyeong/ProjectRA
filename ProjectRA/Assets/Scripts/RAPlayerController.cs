@@ -2,6 +2,8 @@ using JetBrains.Annotations;
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 namespace RA {
 	public class RAPlayerController : NetworkBehaviour
@@ -9,16 +11,17 @@ namespace RA {
 		public PullLine pullLine;
 		public RAPlayer player;
 		public Rigidbody characterController;
-		public RAProp targetProp = null;
+		public RAProp pickedProp = null;
+		public RAProp viewTargetProp = null;
 
-		public RAProp viewProp = null;
+		public Vector3 m_grabPointLocal = new Vector3(); 
 
-		public float propRange = 1;
+		public float grapRange = 1;
 
 		public void Awake()
 		{
-			characterController = GetComponent<Rigidbody>();
 			player = GetComponent<RAPlayer>();
+			characterController = GetComponent<Rigidbody>();
 		}
 
 		public void PlayerInput()
@@ -34,87 +37,67 @@ namespace RA {
 					{
 						isSelected = true;
 						RAProp prop = propCol.prop;
-						if (viewProp != prop)
+						if (viewTargetProp != prop)
 						{
-							if (viewProp != null)
+							if (viewTargetProp != null)
 							{
-								viewProp.Select(false);
+								viewTargetProp.Select(false);
 							}
-							viewProp = prop;
-							viewProp.Select(true);
+							viewTargetProp = prop;
+							viewTargetProp.Select(true);
 						}
-						// Prop ·¹ÀÌ¾î¿¡ ÀÖ´Â ¿ÀºêÁ§Æ®¸¦ Å¬¸¯ÇßÀ» ¶§
+						// Prop ï¿½ï¿½ï¿½Ì¾î¿¡ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 						if (Input.GetKeyDown(KeyCode.Mouse0))
 						{
-							CmdPullOn(prop.GetComponent<NetworkIdentity>());
+							Vector3 grabPointLocal = propCol.prop.transform.InverseTransformPoint(hit.point);
+							CmdPickUpProp(prop.GetComponent<NetworkIdentity>(), grabPointLocal);
 						}
 					}
 				}
 			}
 			if(!isSelected)
 			{
-				if (viewProp != null)
+				if (viewTargetProp != null)
 				{
-					viewProp.Select(false);
-					viewProp = null;
+					viewTargetProp.Select(false);
+					viewTargetProp = null;
 				}
 			}
 			if (Input.GetKeyUp(KeyCode.Mouse0))
 			{
-				CmdPullOff();
+				CmdDropProp();
 			}
 		}
+
+		public void UpdatePickedProp()
+		{
+		}
+
+		Vector3 GetPickDest()
+		{
+			Vector3 aimTarget = Camera.main.transform.position + Camera.main.transform.forward * grapRange;
+			return aimTarget;
+		}
+
+		public Vector3 GetGrabPointWorldPosition()
+		{
+			if (pickedProp != null)
+			{
+				return pickedProp.transform.TransformPoint(m_grabPointLocal);
+			}
+			return Vector3.zero;
+		}
+
 		public void Update()
 		{
 			if(player.isLocalPlayer)
 			{
 				PlayerInput();
 			}
-			//Ä«¸Þ¶ó¿¡¼­ raycast½÷¼­ Prop·¹ÀÌ¾î Ã¼Å©
-			
-
-			if (targetProp != null)
+			if (pickedProp != null)
 			{
-				Vector3 headPosition = gameObject.transform.position + Vector3.up * 0.3f;
-				Vector3 targetPosition = headPosition + player.viewDir.normalized * propRange;
-				Vector3 direction = (targetPosition - targetProp.transform.position);
-				float power;
-				if (targetProp.weight >= 1)
-				{
-					power = player.power / targetProp.weight;
-				}
-				else
-				{
-					power = player.power / 1;
-				}
-				// ¸ñÇ¥ ¹æÇâ ¹× °Å¸® °è»ê
-				Vector3 toTarget = targetPosition - targetProp.transform.position;
-				float distance = toTarget.magnitude;
-				Vector3 dirNorm = toTarget.normalized;
-
-				// ÇöÀç ¼Óµµ¸¦ ¹æÇâ¿¡ Åõ¿µ
-				float currentSpeedInDir = Vector3.Dot(targetProp.rb.velocity.normalized, dirNorm);
-
-				// °Å¸® ±â¹Ý ¸ñÇ¥ ¼Óµµ °è»ê (¿¹: power * distance)
-				float desiredSpeed = power * distance;
-
-				// Ãß°¡ÇØ¾ß ÇÒ ¼Óµµ °è»ê
-				float speedToAdd = desiredSpeed * 1+currentSpeedInDir;
-
-				// ÈûÀ¸·Î º¯È¯ÇØ¼­ Àû¿ë
-				Vector3 force = dirNorm * speedToAdd * targetProp.rb.mass * Time.deltaTime;
-				targetProp.rb.AddForce(force, ForceMode.Impulse);
-				Debug.Log($"Pulled {targetProp.name} with weight {targetProp.weight}");
-
-				if(pullLine == null)
-				{
-					GameObject pullLinePrefab =  Resources.Load("PullLine") as GameObject;
-					GameObject newPullLine = Instantiate(pullLinePrefab, Vector3.zero, Quaternion.identity);
-					pullLine = newPullLine.GetComponent<PullLine>();
-				}
-				pullLine.point1 = transform.position + Vector3.up * 0.5f;
-				pullLine.point2 = Vector3.Lerp(pullLine.point1, targetPosition, 0.5f);
-				pullLine.point3 = targetProp.transform.position;
+				UpdateGrabedProp();
+				UpdatePickupLineEffect();
 			} else
 			{
 				if(pullLine != null)
@@ -124,35 +107,69 @@ namespace RA {
 			}
 		}
 
-		[Command]
-		public void CmdPullOn(NetworkIdentity propIdentity)
+		public void UpdateGrabedProp()
 		{
-			if (propIdentity != null)
-			{
-				targetProp = propIdentity.GetComponent<RAProp>();
-				RpcPullOn(propIdentity);
-			}
+			Vector3 grabPoint = GetGrabPointWorldPosition();
+
+			Vector3 pickDest = GetPickDest();
+			Vector3 direction = (pickDest - grabPoint);
+
+			Gizmos.color = Color.red;
+			Debug.DrawLine(grabPoint, pickDest);
+
+			Vector3 forceDirection = direction;
+			float power = 500 * Time.deltaTime;
+
+			pickedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 		}
-		[ClientRpc]
-		public void RpcPullOn(NetworkIdentity propIdentity)
+
+		public void UpdatePickupLineEffect()
+		{
+			Vector3 pickDest = GetPickDest();
+			Vector3 grabPoint = GetGrabPointWorldPosition();
+			if (pullLine == null)
+			{
+				GameObject pullLinePrefab = Resources.Load("PullLine") as GameObject;
+				GameObject newPullLine = Instantiate(pullLinePrefab, Vector3.zero, Quaternion.identity);
+				pullLine = newPullLine.GetComponent<PullLine>();
+			}
+			pullLine.point1 = Camera.main.transform.position;
+			pullLine.point2 = Vector3.Lerp(pullLine.point1, pickDest, 0.5f);
+			pullLine.point3 = grabPoint;
+		}
+
+		public void PickUpProp(NetworkIdentity propIdentity, Vector3 _grabPointLocal)
 		{
 			if (propIdentity != null)
 			{
-				targetProp = propIdentity.GetComponent<RAProp>();
+				pickedProp = propIdentity.GetComponent<RAProp>();
+				m_grabPointLocal = _grabPointLocal;
 			}
 		}
 
 		[Command]
-		public void CmdPullOff()
+		public void CmdPickUpProp(NetworkIdentity propIdentity, Vector3 _grabPointLocal)
 		{
-			targetProp = null;
-			RpcPullOff();
+			PickUpProp(propIdentity, _grabPointLocal);
+			RpcPickUpProp(propIdentity, _grabPointLocal);
+		}
+		[ClientRpc]
+		public void RpcPickUpProp(NetworkIdentity propIdentity, Vector3 _grabPointLocal)
+		{
+			PickUpProp(propIdentity, _grabPointLocal);
+		}
+
+		[Command]
+		public void CmdDropProp()
+		{
+			pickedProp = null;
+			RpcDropProp();
 		}
 
 		[ClientRpc]
-		public void RpcPullOff()
+		public void RpcDropProp()
 		{
-			targetProp = null;
+			pickedProp = null;
 		}
 	}
 }
