@@ -1,0 +1,10 @@
+6bbd1c36885073d01b2f819358cbfad316fdff8b ProjectRA/Assets/Plugins/ECM2/v1.4/Shared Assets/Models/UnityCharacter/Animations/HumanoidCrouch.fbx
+8f17d947aa4530fd5a89909a1096b890a4d5fce6 ResourcePatchTool/PatchConsole/bin/Debug/EPPlus.dll
+c22cfdf9b00c6531e379eb9aba7adea82e64c241 ResourcePatchTool/ResourcePatchTool/bin/Debug/System.Windows.Forms.xml
+1b4c7536e70fd2b5cc3594487c6b264eb85f6553 ResourcePatchTool/packages/EPPlus.7.5.1/EPPlus.7.5.1.nupkg
+48117854c2afcbbeac31552f40fed5d6faefae9d ResourcePatchTool/packages/EPPlus.7.5.1/lib/net35/EPPlus.dll
+e31d31f00353a7b67ede25269adc6223db5e7044 ResourcePatchTool/packages/EPPlus.7.5.1/lib/net8.0/EPPlus.dll
+e6691dd2cde795b1bf13cfdf87a24dd79bee0044 ResourcePatchTool/packages/EPPlus.7.5.1/lib/netstandard2.0/EPPlus.dll
+8610ab3374a2285c35cefcd889eea1ccc6311602 ResourcePatchTool/packages/EPPlus.7.5.1/lib/netstandard2.1/EPPlus.dll
+d61c86a1e90e9769c1f24aada62d848e89bed982 ResourcePatchTool/packages/System.Runtime.4.3.0/System.Runtime.4.3.0.nupkg
+8cb7ece1cac6bfbb59e1333917a7e829a3432039 ResourcePatchTool/packages/WindowsAPICodePack.8.0.6/WindowsAPICodePack.8.0.6.nupkg
