@@ -31,6 +31,22 @@ public class RoomPreset : MonoBehaviour
 				roomInfo.doors.Add(doorInfo);
 			}
 		}
+		PropSpawner[] spawners = GetComponentsInChildren<PropSpawner>();
+
+		foreach (PropSpawner spawner in spawners)
+		{
+			PropSpawnerInfo spawnerInfo = new PropSpawnerInfo
+			{
+				itemType = spawner.itemType,
+				spawnChance = 1,
+				spawnCount = 1,
+				positionOffset = spawner.transform.position,
+				rotationOffset = spawner.transform.rotation.eulerAngles,
+				scaleOffset = spawner.transform.localScale
+			};
+			roomInfo.spawner.Add(spawnerInfo);
+		}
+
 
 		RoomPresetArea[] area = GetComponentsInChildren<RoomPresetArea>();
 		foreach (RoomPresetArea areaItem in area)

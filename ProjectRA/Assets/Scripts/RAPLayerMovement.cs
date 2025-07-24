@@ -1,3 +1,4 @@
+using ECM2;
 using Mirror;
 using System;
 using UnityEngine;
@@ -54,9 +55,12 @@ public class RAPLayerMovement : NetworkBehaviour
 
 	public TransformSapshot targetTransform;
 
+	public Character character;
+
 	void Awake()
 	{
 		player = GetComponent<RAPlayer>();
+		character = GetComponent<Character>();
 	}
 
 	void Update()
@@ -83,14 +87,25 @@ public class RAPLayerMovement : NetworkBehaviour
 			input = CameraController.Instance.viewRot * input;
 			input.y = 0;
 			input = input.normalized;
-			moveVelocity += input * Time.deltaTime;
+			//moveVelocity += input * Time.deltaTime;
+
+			character.SetMovementDirection(input);
 
 
-			if (Input.GetKeyDown(KeyCode.Space)) moveVelocity += Vector3.up * 2f;
+			if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C))
+				character.Crouch();
+			else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.C))
+				character.UnCrouch();
 
-			transform.position = transform.position + (moveVelocity * moveSpeed * Time.deltaTime);
+			if (Input.GetButtonDown("Jump"))
+				character.Jump();
+			else if (Input.GetButtonUp("Jump"))
+				character.StopJumping();
+			//if (Input.GetKeyDown(KeyCode.Space)) moveVelocity += Vector3.up * 2f;
+
+			//transform.position = transform.position + (moveVelocity * moveSpeed * Time.deltaTime);
 			model.transform.rotation = Quaternion.LookRotation(CameraController.Instance.viewDIrXZ, Vector3.up);
-			moveVelocity = Vector3.Lerp(moveVelocity, Vector3.zero, 0.1f);
+			//moveVelocity = Vector3.Lerp(moveVelocity, Vector3.zero, 0.1f);
 			player.viewDir = CameraController.Instance.viewDir;
 			head.transform.rotation = Quaternion.LookRotation(CameraController.Instance.viewDir, Vector3.up);
 

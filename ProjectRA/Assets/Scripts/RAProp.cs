@@ -11,10 +11,14 @@ public enum ePropState
 
 public class RAProp : NetworkBehaviour
 {
-	public int hp;
-	public int maxHp;
+	public int hp = 100;
+	public int maxHp = 100;
+	public int maxPrice;
 	public int price;
 	public float weight = 1;
+	public float minImpactToDamage = 10f;  // 이보다 약한 충돌은 무시
+	public float damageMultiplier = 10f;  // 강도에 따른 피해량 배수
+	public int breakLevel = 5;
 
 	public Rigidbody rb;
 	public RAPropCollider propCollider;
@@ -91,5 +95,46 @@ public class RAProp : NetworkBehaviour
 		propCollider = model.GetComponent<RAPropCollider>();
 		propCollider.prop = this;
 		Select(false);
+	}
+	void OnCollisionEnter(Collision collision)
+	{
+		float impact = collision.relativeVelocity.magnitude;
+
+		if (impact >= minImpactToDamage)
+		{
+			float damage = (impact - minImpactToDamage) * damageMultiplier;
+			hp -= (int)damage;
+			int prevBreakLevel = breakLevel;
+			breakLevel = hp % 20;
+
+			if(prevBreakLevel != breakLevel)
+			{
+				ParticleManager.Instance.PlayParticle(eParticleType.PropBreak, transform.position, Quaternion.LookRotation(rb.velocity));
+				if (hp <= 0)
+				{
+					price = 0;
+				}
+				else
+				{
+					price = (int)((hp / (float)maxHp) * maxPrice);
+				}
+				GameRoomEvent_OnDamageProp ev = new GameRoomEvent_OnDamageProp();
+				ev.targetProp = this;
+				CGameManager.Instance.roomEventBus.Publish(ev);
+			}
+			
+
+			Debug.Log($"{gameObject.name} 충격으로 {damage} 피해 → 남은 가격: {price}, 남은 HP : {hp}");
+
+			if (price <= 0f)
+			{
+				BreakProp();
+			}
+		}
+	}
+
+	void BreakProp()
+	{
+		Destroy(gameObject);
 	}
 }

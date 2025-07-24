@@ -63,5 +63,27 @@
                 "z": -1.0
             }
         }
+    ],
+    "spawner": [
+        {
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 1.6679999828338624,
+                "y": 1.0,
+                "z": -1.5140000581741334
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        }
     ]
 }

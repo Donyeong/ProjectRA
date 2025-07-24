@@ -39,5 +39,47 @@
                 "z": -1.1920928955078126e-7
             }
         }
+    ],
+    "spawner": [
+        {
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 3.5,
+                "y": 1.0,
+                "z": -2.75
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 3.5,
+                "y": 1.0,
+                "z": -2.75
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        }
     ]
 }

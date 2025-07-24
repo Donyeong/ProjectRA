@@ -14,9 +14,12 @@ namespace RA {
 		public RAProp pickedProp = null;
 		public RAProp viewTargetProp = null;
 
+		public InteractableObject interactableObject = null;
+
 		public Vector3 m_grabPointLocal = new Vector3(); 
 
 		public float grapRange = 1;
+		public float strength = 300;
 
 		public void Awake()
 		{
@@ -28,8 +31,31 @@ namespace RA {
 		{
 			RaycastHit hit;
 			bool isSelected = false;
+			bool intObjSelected = false;
 			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
 			{
+				if(hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Interactable")) {
+					InteractableObject intObj = hit.collider.GetComponent<InteractableObject>();
+					intObjSelected = true;
+					if (interactableObject != intObj)
+					{
+						if (interactableObject != null)
+						{
+							interactableObject.OnOutAim();
+							GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+							CGameManager.Instance.roomEventBus.Publish(ev);
+						}
+						interactableObject = intObj;
+						interactableObject.OnInAim();
+						GameRoomEvent_OnInteractAimIn e = new GameRoomEvent_OnInteractAimIn() { interactableObject = interactableObject };
+						CGameManager.Instance.roomEventBus.Publish(e);
+					}
+
+					if (Input.GetKeyDown(KeyCode.E))
+					{
+						interactableObject.OnInteract();
+					}
+				}
 				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("PropCollider"))
 				{
 					RAPropCollider propCol = hit.collider.GetComponent<RAPropCollider>();
@@ -51,6 +77,10 @@ namespace RA {
 						{
 							Vector3 grabPointLocal = propCol.prop.transform.InverseTransformPoint(hit.point);
 							CmdPickUpProp(prop.GetComponent<NetworkIdentity>(), grabPointLocal);
+
+							GameRoomEvent_OnGrabProp ev = new GameRoomEvent_OnGrabProp();
+							ev.targetProp = prop;
+							CGameManager.Instance.roomEventBus.Publish(ev);
 						}
 					}
 				}
@@ -63,8 +93,20 @@ namespace RA {
 					viewTargetProp = null;
 				}
 			}
+			if (!intObjSelected)
+			{
+				if (interactableObject != null)
+				{
+					interactableObject.OnOutAim();
+					GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+					CGameManager.Instance.roomEventBus.Publish(ev);
+					interactableObject = null;
+				}
+			}
 			if (Input.GetKeyUp(KeyCode.Mouse0))
 			{
+				GameRoomEvent_OnDropProp ev = new GameRoomEvent_OnDropProp();
+				CGameManager.Instance.roomEventBus.Publish(ev);
 				CmdDropProp();
 			}
 		}
@@ -90,6 +132,21 @@ namespace RA {
 
 		public void Update()
 		{
+			if (pickedProp != null)
+			{
+				UpdatePickupLineEffect();
+			}
+			else
+			{
+				if (pullLine != null)
+				{
+					Destroy(pullLine.gameObject);
+				}
+			}
+		}
+
+		public void FixedUpdate()
+		{
 			if(player.isLocalPlayer)
 			{
 				PlayerInput();
@@ -97,13 +154,6 @@ namespace RA {
 			if (pickedProp != null)
 			{
 				UpdateGrabedProp();
-				UpdatePickupLineEffect();
-			} else
-			{
-				if(pullLine != null)
-				{
-					Destroy(pullLine.gameObject);
-				}
 			}
 		}
 
@@ -118,7 +168,7 @@ namespace RA {
 			Debug.DrawLine(grabPoint, pickDest);
 
 			Vector3 forceDirection = direction;
-			float power = 500 * Time.deltaTime;
+			float power = strength;
 
 			pickedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 		}
@@ -133,8 +183,8 @@ namespace RA {
 				GameObject newPullLine = Instantiate(pullLinePrefab, Vector3.zero, Quaternion.identity);
 				pullLine = newPullLine.GetComponent<PullLine>();
 			}
-			pullLine.point1 = Camera.main.transform.position;
-			pullLine.point2 = Vector3.Lerp(pullLine.point1, pickDest, 0.5f);
+			pullLine.point1 = Camera.main.transform.position + Vector3.down*0.3f + (CameraController.Instance.viewRot * Vector3.right * 0.2f);
+			pullLine.point2 = pickDest;//Vector3.Lerp(pullLine.point1, pickDest, 0.5f);
 			pullLine.point3 = grabPoint;
 		}
 

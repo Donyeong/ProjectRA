@@ -9,6 +9,17 @@ using ReferenceTable;
 using UnityEditor.Presets;
 
 [Serializable]
+public class PropSpawnerInfo
+{
+	public eItemType itemType = eItemType.small;
+	public int spawnChance = 100; // 0~100
+	public int spawnCount = 1; // 한번에 생성할 개수
+	public Vector3 positionOffset = Vector3.zero;
+	public Vector3 rotationOffset = Vector3.zero;
+	public Vector3 scaleOffset = Vector3.one;
+}
+
+[Serializable]
 public class DoorInfo
 {
 	public Vector3 position;
@@ -21,6 +32,8 @@ public class RoomPresetInfo
 	public List<Bounds> bounds = new List<Bounds>();
 
 	public List<DoorInfo> doors = new List<DoorInfo>();
+
+	public List<PropSpawnerInfo> spawner = new List<PropSpawnerInfo>();
 }
 
 public class RoomInfo : RoomPresetInfo
@@ -142,7 +155,7 @@ public class RoomGenerator
 		RoomInfo defalutRoom = new RoomInfo();
 		defalutRoom.CopyFrom(defaultRoomPreset);
 		AddRoom(defalutRoom);
-		int maxLoop = 30000;
+		int maxLoop = 3000;
 		int loopCount = 0;
 		while (rooms.Count < roomCount)
 		{
@@ -269,12 +282,24 @@ public class MapGenerator : SingletonMono<MapGenerator>
 		generator.GenerateRooms(mapId, mapSize);
 	}
 
-	public void GenerateRoomsInEditor()
+	public void GenerateRooms()
 	{
 		generator.GenerateRooms(mapId, mapSize);
 		GenerateRoomObject();
+	}
 
-
+	public List<PropSpawnerInfo> GetAllSpawner()
+	{
+		List<PropSpawnerInfo> res = new List<PropSpawnerInfo>();
+		foreach (var room in generator.rooms)
+		{
+			foreach (var spawner in room.spawner)
+			{
+				//if (spawner.spawnCount <= 0 || spawner.spawnChance <= 0) continue;
+				res.Add(spawner);
+			}
+		}
+		return res;
 	}
 
 	public void GenerateRoomObject()
@@ -326,7 +351,7 @@ public class MapManagerEditor : Editor
 		MapGenerator mapManager = (MapGenerator)target;
 		if (GUILayout.Button("방 생성"))
 		{
-			mapManager.GenerateRoomsInEditor();
+			mapManager.GenerateRooms();
 		}
 		if (GUILayout.Button("엑셀 데이터 Reload"))
 		{

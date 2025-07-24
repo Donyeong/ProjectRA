@@ -5,6 +5,7 @@ using UnityEngine;
 public class PullLine : MonoBehaviour
 {
 	public GameObject pointEffect;
+	public GameObject middlePoint;
 	public Vector3 point1;
 	public Vector3 point2;
 	public Vector3 point3;
@@ -13,11 +14,19 @@ public class PullLine : MonoBehaviour
 
 	LineRenderer lineRenderer;
 
-	void Start() => lineRenderer = GetComponent<LineRenderer>();
+	void Start()  {
+		lineRenderer = GetComponent<LineRenderer>();
+	}
 
 	// Update is called once per frame
-	void Update()
+	void LateUpdate()
 	{
+		UpdateLines();
+	}
+
+	public void UpdateLines()
+	{
+
 		List<Vector3> pointPositions = new List<Vector3>();
 		for (float i = 0; i <= 1; i += 1f / vertexResolution)
 		{
@@ -41,8 +50,9 @@ public class PullLine : MonoBehaviour
 		}
 
 
-	lineRenderer.positionCount = pointPositions.Count;
+		lineRenderer.positionCount = pointPositions.Count;
 		lineRenderer.SetPositions(pointPositions.ToArray());
 		pointEffect.transform.position = point3;
+		middlePoint.transform.position = point2;
 	}
 }
