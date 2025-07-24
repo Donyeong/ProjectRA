@@ -2,9 +2,11 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Vivox;
 using UnityEngine;
 using Utp;
 
@@ -43,7 +45,7 @@ public class RANetworkManager : NetworkManager
 
 	private UtpTransport utpTransport;
 
-	private string relayJoinCode;
+	public string relayJoinCode { get; private set; };
 
 	public override void Awake()
 	{
@@ -75,6 +77,7 @@ public class RANetworkManager : NetworkManager
 
 	public void JoinRelayServer(string _joinCode)
 	{
+		textRoomCode.SetText($"RoomCode {relayJoinCode}");
 		relayJoinCode = _joinCode;
 		utpTransport.useRelay = true;
 		utpTransport.ConfigureClientWithJoinCode(_joinCode,
@@ -88,7 +91,7 @@ public class RANetworkManager : NetworkManager
 		});
 	}
 
-	public async void UnityLogin()
+	public async Task UnityLogin()
 	{
 		try
 		{
@@ -203,6 +206,9 @@ public class RANetworkManager : NetworkManager
 		base.OnClientConnect();
 		Debug.Log($"MyNetworkManager: {m_Username} Connected to Server!");
 		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
+
+
+		VoiceChatManager.Instance.Join3DChannel(VoiceChatManager.Instance.GetChannelNameFromRoom(relayJoinCode));
 	}
 
 	public override void OnClientDisconnect()

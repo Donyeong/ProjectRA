@@ -11,6 +11,7 @@ using UnityEditor.Presets;
 [Serializable]
 public class PropSpawnerInfo
 {
+	public int spawnerId;
 	public eItemType itemType = eItemType.small;
 	public int spawnChance = 100; // 0~100
 	public int spawnCount = 1; // 한번에 생성할 개수
@@ -22,6 +23,7 @@ public class PropSpawnerInfo
 [Serializable]
 public class DoorInfo
 {
+	public int doorId;
 	public Vector3 position;
 	public Vector3 direction;
 }
@@ -53,6 +55,19 @@ public class RoomInfo : RoomPresetInfo
 				direction = d.direction
 			});
 		}
+		spawner = new List<PropSpawnerInfo>(preset.spawner);
+/*		foreach (var s in preset.spawner)
+		{
+			spawner.Add(new PropSpawnerInfo
+			{
+				itemType = s.itemType,
+				spawnChance = s.spawnChance,
+				spawnCount = s.spawnCount,
+				positionOffset = s.positionOffset,
+				rotationOffset = s.rotationOffset,
+				scaleOffset = s.scaleOffset
+			});
+		}*/
 		position = Vector3.zero;
 		rotation = Quaternion.identity;
 	}
@@ -146,29 +161,41 @@ public class RoomGenerator
 
 	public void GenerateRooms(int mapId, int mapSize)
 	{
-		roomCount = mapSize;
-		LoadPresetData(mapId);
-		rooms.Clear();
-		bounds.Clear();
-		RoomPresetInfo defaultRoomPreset = roomPresets.First();
-		openedDoors.Clear();
-		RoomInfo defalutRoom = new RoomInfo();
-		defalutRoom.CopyFrom(defaultRoomPreset);
-		AddRoom(defalutRoom);
+		//최대 10회 시도
+		for (int i = 0; i < 10; i++)
+		{
+			roomCount = mapSize;
+			LoadPresetData(mapId);
+			rooms.Clear();
+			bounds.Clear();
+			RoomPresetInfo defaultRoomPreset = roomPresets.First();
+			openedDoors.Clear();
+			RoomInfo defalutRoom = new RoomInfo();
+			defalutRoom.CopyFrom(defaultRoomPreset);
+			AddRoom(defalutRoom);
+			if (GenRandomRoom())
+			{
+				break;
+			}
+		}
+	}
+
+	public bool GenRandomRoom()
+	{
 		int maxLoop = 3000;
 		int loopCount = 0;
 		while (rooms.Count < roomCount)
 		{
-			if(loopCount > maxLoop)
+			if (loopCount > maxLoop)
 			{
-				Debug.LogWarning("방 생성 실패: 최대 반복 횟수 초과");
-				break;
+				Debug.LogWarning("Failed Generate Room ( max loop )");
+				return false;
 			}
 			loopCount++;
-			if(openedDoors.Count == 0)
+			if (openedDoors.Count == 0)
 			{
-				Debug.LogWarning("방 생성 실패: 문이 달린 방이 없음");
-				break;
+				Debug.LogWarning("Failed Generate Room ( net found door )");
+				return false;
 			}
 
 			OpenedDoorInfo targetDoor = openedDoors.Dequeue();
@@ -185,7 +212,8 @@ public class RoomGenerator
 			}
 			bool added = false;
 			RoomInfo.RotateRoomAroundY(roomInfo, UnityEngine.Random.Range(0, 4) * 90f);
-			foreach (var door in roomInfo.doors) {
+			foreach (var door in roomInfo.doors)
+			{
 				roomInfo.position = targetDoor.roomInfo.position + targetDoor.doorInfo.position - door.position;
 
 				if (AddRoom(roomInfo))
@@ -196,7 +224,7 @@ public class RoomGenerator
 				}
 				else
 				{
-					Debug.LogWarning($"방 생성 실패: {randomPreset.preset_key}가 겹침");
+					//Debug.LogWarning($"방 생성 실패: {randomPreset.preset_key}가 겹침");
 				}
 			}
 			if (!added)
@@ -204,6 +232,7 @@ public class RoomGenerator
 				openedDoors.Enqueue(targetDoor);
 			}
 		}
+		return true;
 	}
 
 	public bool AddRoom(RoomInfo _roomInfo)
@@ -273,7 +302,7 @@ public class MapGenerator : SingletonMono<MapGenerator>
 	public bool drawPropGizmos = true; // Gizmos를 그릴지 여부
 	public bool drawMapGizmos = true; // Gizmos를 그릴지 여부
 	public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
-	RoomGenerator generator = new RoomGenerator();
+	public RoomGenerator generator = new RoomGenerator();
 	public int mapId = 1;
 	public int mapSize = 50;
 
@@ -286,20 +315,6 @@ public class MapGenerator : SingletonMono<MapGenerator>
 	{
 		generator.GenerateRooms(mapId, mapSize);
 		GenerateRoomObject();
-	}
-
-	public List<PropSpawnerInfo> GetAllSpawner()
-	{
-		List<PropSpawnerInfo> res = new List<PropSpawnerInfo>();
-		foreach (var room in generator.rooms)
-		{
-			foreach (var spawner in room.spawner)
-			{
-				//if (spawner.spawnCount <= 0 || spawner.spawnChance <= 0) continue;
-				res.Add(spawner);
-			}
-		}
-		return res;
 	}
 
 	public void GenerateRoomObject()

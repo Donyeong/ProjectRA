@@ -33,14 +33,15 @@ public class MapManager : MonoBehaviour
 	public void Generate()
 	{
 		mapGenerator.GenerateRooms();
-		List<PropSpawnerInfo> spawnerInfos = mapGenerator.GetAllSpawner();
 
 		GameObject itemPrefab = ResourceManager.Instance.LoadResource<GameObject>("Props/Prop");
 		RANetworkManager.instance.spawnPrefabs.Add(itemPrefab);
-		Debug.Log("Spawner Count" + spawnerInfos.Count);
-		foreach(PropSpawnerInfo spawnerInfo in spawnerInfos)
+		foreach (var room in mapGenerator.generator.rooms)
 		{
-			SpawnItem(itemPrefab, spawnerInfo.positionOffset, Random.RandomRange(0, 3));
+			foreach (var spawner in room.spawner)
+			{
+				SpawnItem(itemPrefab, room.position + spawner.positionOffset, Random.RandomRange(0, 3));
+			}
 		}
 
 		RANetworkManager.instance.localPlayer.transform.position = Vector3.zero;
