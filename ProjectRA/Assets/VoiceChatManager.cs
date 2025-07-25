@@ -66,7 +66,7 @@ public class VoiceChatManager : SingletonMono<VoiceChatManager>
 	{
 		e.ParticipantSpeechDetected += () =>
 		{
-			Debug.Log($"Participant {e.ParticipantId} is speaking in channel {e.ChannelName}");
+			//Debug.Log($"Participant {e.ParticipantId} is speaking in channel {e.ChannelName}");
 		};
 	}
 

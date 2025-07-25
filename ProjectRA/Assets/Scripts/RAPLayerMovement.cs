@@ -43,11 +43,14 @@ public class RAPLayerMovement : NetworkBehaviour
 
 	RAPlayer player;
 
+	public GameObject camPos;
 	public GameObject head;
 	public GameObject model;
 
 	Vector3 moveVelocity;
-	public float moveSpeed = 1;
+	public float crouchedSpeed = 0.7f;
+	public float moveSpeed = 1.5f;
+	public float runMoveSeped = 3f;
 
 /*	// 위치와 회전 동기화
 	[SyncVar] Vector3 syncPosition;
@@ -56,6 +59,9 @@ public class RAPLayerMovement : NetworkBehaviour
 	public TransformSapshot targetTransform;
 
 	public Character character;
+
+	public float targetHeadHeight;
+
 
 	void Awake()
 	{
@@ -72,6 +78,17 @@ public class RAPLayerMovement : NetworkBehaviour
 		{
 			RemoteSimulateTransform();
 		}
+		if(character.IsCrouched())
+		{
+			targetHeadHeight = character.crouchedHeight;
+		} else
+		{
+			targetHeadHeight = character.height;
+		}
+
+		head.transform.position = Vector3.Lerp(head.transform.position, model.transform.position + Vector3.up * targetHeadHeight, 10 * Time.deltaTime);
+		camPos.transform.position = head.transform.position;
+
 	}
 
 	void HandleMovement()
@@ -117,6 +134,17 @@ public class RAPLayerMovement : NetworkBehaviour
 			bool isMove = input.magnitude > 0.001f;
 			player.playerAnimController.SetMove(isMove);
 			player.playerAnimController.SetRun(true);
+
+
+			if (Input.GetKey(KeyCode.LeftShift))
+			{
+				character.maxWalkSpeed = moveSpeed;
+			}
+			else
+			{
+				character.maxWalkSpeed = runMoveSeped;
+			}
+			character.maxWalkSpeedCrouched = crouchedSpeed;
 
 		}
 	}

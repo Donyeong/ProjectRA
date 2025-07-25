@@ -58,6 +58,12 @@ namespace ECM2.Walkthrough.Ex22
                 _character.Jump();
             else if (Input.GetButtonUp("Jump"))
                 _character.StopJumping();
-        }
+
+			if (Input.GetKeyDown(KeyCode.LeftControl))
+				_character.Crouch();
+			else if (Input.GetKeyUp(KeyCode.LeftControl))
+				_character.UnCrouch();
+
+		}
     }
 }

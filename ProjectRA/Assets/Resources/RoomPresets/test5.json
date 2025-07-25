@@ -16,6 +16,7 @@
     ],
     "doors": [
         {
+            "doorId": 0,
             "position": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28,6 +29,7 @@
             }
         },
         {
+            "doorId": 0,
             "position": {
                 "x": -2.0,
                 "y": 0.0,
@@ -40,6 +42,7 @@
             }
         },
         {
+            "doorId": 0,
             "position": {
                 "x": 4.0,
                 "y": 0.0,
@@ -52,6 +55,7 @@
             }
         },
         {
+            "doorId": 0,
             "position": {
                 "x": 1.0,
                 "y": 0.0,
@@ -66,13 +70,56 @@
     ],
     "spawner": [
         {
+            "spawnerId": 0,
             "itemType": 1,
             "spawnChance": 1,
             "spawnCount": 1,
             "positionOffset": {
-                "x": 1.6679999828338624,
+                "x": 0.2409999966621399,
                 "y": 1.0,
-                "z": -1.5140000581741334
+                "z": -2.0739998817443849
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": -0.1469999998807907,
+                "y": 1.0,
+                "z": -2.062999963760376
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 3.2739999294281008,
+                "y": 0.44699999690055849,
+                "z": -2.0239999294281008
             },
             "rotationOffset": {
                 "x": 0.0,

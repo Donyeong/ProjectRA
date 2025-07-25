@@ -16,6 +16,7 @@
     ],
     "doors": [
         {
+            "doorId": 0,
             "position": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28,6 +29,7 @@
             }
         },
         {
+            "doorId": 0,
             "position": {
                 "x": -2.0,
                 "y": 0.0,
@@ -42,6 +44,7 @@
     ],
     "spawner": [
         {
+            "spawnerId": 0,
             "itemType": 1,
             "spawnChance": 1,
             "spawnCount": 1,
@@ -62,13 +65,98 @@
             }
         },
         {
+            "spawnerId": 0,
             "itemType": 1,
             "spawnChance": 1,
             "spawnCount": 1,
             "positionOffset": {
-                "x": 3.5,
+                "x": 0.2409999966621399,
                 "y": 1.0,
-                "z": -2.75
+                "z": -2.930999994277954
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": -0.1469999998807907,
+                "y": 1.0,
+                "z": -2.9200000762939455
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 2.0999999046325685,
+                "y": 1.0,
+                "z": -2.930999994277954
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 2.427999973297119,
+                "y": 1.0,
+                "z": -2.930999994277954
+            },
+            "rotationOffset": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scaleOffset": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+            }
+        },
+        {
+            "spawnerId": 0,
+            "itemType": 1,
+            "spawnChance": 1,
+            "spawnCount": 1,
+            "positionOffset": {
+                "x": 3.0199999809265138,
+                "y": 0.6850000023841858,
+                "z": -1.4279999732971192
             },
             "rotationOffset": {
                 "x": 0.0,

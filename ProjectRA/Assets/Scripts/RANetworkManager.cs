@@ -45,7 +45,7 @@ public class RANetworkManager : NetworkManager
 
 	private UtpTransport utpTransport;
 
-	public string relayJoinCode { get; private set; };
+	public string relayJoinCode { get; private set; }
 
 	public override void Awake()
 	{
@@ -208,7 +208,7 @@ public class RANetworkManager : NetworkManager
 		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
 
 
-		VoiceChatManager.Instance.Join3DChannel(VoiceChatManager.Instance.GetChannelNameFromRoom(relayJoinCode));
+		VoiceChatManager.Instance.Join3DChannel();
 	}
 
 	public override void OnClientDisconnect()

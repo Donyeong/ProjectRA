@@ -100,16 +100,27 @@ public class RAProp : NetworkBehaviour
 	{
 		float impact = collision.relativeVelocity.magnitude;
 
+		// 충돌 표면의 법선 벡터(첫 번째 접촉점 기준)
+		Vector3 normal = collision.contacts[0].normal;
+		// 상대 속도 방향(반대 방향으로)
+		Vector3 relVelDir = -collision.relativeVelocity.normalized;
+
+		// 각도 보정값: 1(정면) ~ 0(완전 비스듬)
+		float angleFactor = Mathf.Clamp01(Vector3.Dot(normal, relVelDir));
+
+		// 각도 보정 적용
+		float adjustedImpact = impact * angleFactor * damageMultiplier;
+
 		if (impact >= minImpactToDamage)
 		{
-			float damage = (impact - minImpactToDamage) * damageMultiplier;
+			float damage = (impact - minImpactToDamage);
 			hp -= (int)damage;
 			int prevBreakLevel = breakLevel;
 			breakLevel = hp % 20;
 
 			if(prevBreakLevel != breakLevel)
 			{
-				ParticleManager.Instance.PlayParticle(eParticleType.PropBreak, transform.position, Quaternion.LookRotation(rb.velocity));
+				ParticleManager.Instance.PlayParticle(eParticleType.PropDamage, transform.position, Quaternion.LookRotation(rb.velocity));
 				if (hp <= 0)
 				{
 					price = 0;
@@ -135,6 +146,7 @@ public class RAProp : NetworkBehaviour
 
 	void BreakProp()
 	{
+		ParticleManager.Instance.PlayParticle(eParticleType.PropBreak, transform.position, Quaternion.LookRotation(rb.velocity));
 		Destroy(gameObject);
 	}
 }

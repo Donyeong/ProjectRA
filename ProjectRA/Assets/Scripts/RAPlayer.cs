@@ -35,7 +35,9 @@ public class RAPlayer : Actor
 	{
 		username = SystemInfo.deviceName;
 		platform = Application.platform.ToString();
-		ip = NetworkManager.singleton.networkAddress;
+		if (NetworkManager.singleton != null) {
+			ip = NetworkManager.singleton.networkAddress;
+		}
 		playerAnimController = GetComponentInChildren<PlayerAnimController>();
 	}
 

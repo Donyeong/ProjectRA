@@ -28,6 +28,7 @@
     ],
     "doors": [
         {
+            "doorId": 0,
             "position": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40,6 +41,7 @@
             }
         },
         {
+            "doorId": 0,
             "position": {
                 "x": -2.0,
                 "y": 0.0,
@@ -54,6 +56,7 @@
     ],
     "spawner": [
         {
+            "spawnerId": 0,
             "itemType": 1,
             "spawnChance": 1,
             "spawnCount": 1,

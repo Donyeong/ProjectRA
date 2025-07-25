@@ -35,6 +35,12 @@ namespace ReferenceTable
 		}
 
 
+		if (table_name == "RefRoom")
+		{
+			return CreateRefDataList<RefRoom>(count);
+		}
+
+
 Debug.LogError($"invalid ref data table name{table_name}");
 return null;
 

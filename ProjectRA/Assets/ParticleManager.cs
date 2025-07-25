@@ -5,6 +5,7 @@ using System;
 
 public enum eParticleType
 {
+	PropDamage,
 	PropBreak,
 }
 

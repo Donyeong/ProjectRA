@@ -148,12 +148,12 @@ public class RoomGenerator
 
 	public void LoadPresetData(int mapId)
 	{
-		List<RefMap> refMaps = RefDataManager.Instance.GetRefDatas<RefMap>();
-		List<RefMap> maps = refMaps.FindAll(x => x.map_id == mapId);
+		List<RefRoom> refRooms = RefDataManager.Instance.GetRefDatas<RefRoom>();
+		List<RefRoom> rooms = refRooms.FindAll(x => x.map_id == mapId);
 		roomPresets.Clear();
-		foreach (var map in maps)
+		foreach (var room in rooms)
 		{
-			string preset_key = $"RoomPresets/{map.room_preset}";
+			string preset_key = $"RoomPresets/{room.room_preset}";
 			RoomPresetInfo preset = JsonLoader.LoadJsonFromResources<RoomPresetInfo>(preset_key);
 			roomPresets.Add(preset);
 		}
@@ -168,9 +168,15 @@ public class RoomGenerator
 			LoadPresetData(mapId);
 			rooms.Clear();
 			bounds.Clear();
-			RoomPresetInfo defaultRoomPreset = roomPresets.First();
 			openedDoors.Clear();
+
+			List<RefMap> refMaps = RefDataManager.Instance.GetRefDatas<RefMap>();
+			RefMap map = refMaps.First(i => i.map_id == mapId);
+			List<RefRoom> refRooms = RefDataManager.Instance.GetRefDatas<RefRoom>();
+			RefRoom refStartRoom = refRooms.First(i => i.room_id == map.start_room_id);
+			RoomPresetInfo defaultRoomPreset = roomPresets.First(i => i.preset_key == refStartRoom.room_preset);
 			RoomInfo defalutRoom = new RoomInfo();
+
 			defalutRoom.CopyFrom(defaultRoomPreset);
 			AddRoom(defalutRoom);
 			if (GenRandomRoom())
