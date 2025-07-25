@@ -6,10 +6,11 @@ using UnityEngine;
 public class PropSpawner : MonoBehaviour
 {
 	public eItemType itemType = eItemType.small;
+#if UNITY_EDITOR
+	public static bool DrawGizmoProp;
 	void OnDrawGizmos()
 	{
-		MapGenerator mapManager = MapGenerator.Instance;
-		if (mapManager != null && !mapManager.drawPropGizmos)
+		if ( !DrawGizmoProp)
 		{
 			return;
 		}
@@ -17,4 +18,5 @@ public class PropSpawner : MonoBehaviour
 
 		Gizmos.DrawCube(transform.position, transform.rotation * transform.localScale);
 	}
+#endif
 }

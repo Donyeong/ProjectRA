@@ -24,6 +24,12 @@ public static class ToolbarUtility
 	private static ScriptableObject _toolbar;
 	private static string[] _scenePaths;
 	private static string[] _sceneNames;
+	
+	private static string[] _prefabPaths;
+	private static string[] _prefabNames;
+
+	public static bool DrawGizmoDoor;
+	public static bool DrawGizmoProp;
 
 	static ToolbarUtility()
 	{
@@ -35,6 +41,24 @@ public static class ToolbarUtility
 
 	private static void Update()
 	{
+		if (_prefabPaths == null)
+		{
+			List<string> prefabPaths = new List<string>();
+			List<string> prefabNames = new List<string>();
+			string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Resources" });
+			foreach (string guid in guids)
+			{
+				string path = AssetDatabase.GUIDToAssetPath(guid);
+				string resourcePath = path;
+				if (resourcePath.StartsWith("Assets/Resources/"))
+					resourcePath = resourcePath.Substring("Assets/Resources/".Length);
+				resourcePath = System.IO.Path.ChangeExtension(resourcePath, null); // 확장자 제거
+				prefabNames.Add(resourcePath);
+				prefabPaths.Add(path);
+			}
+			_prefabPaths = prefabPaths.ToArray();
+			_prefabNames = prefabNames.ToArray();
+		}
 		if (_toolbar == null)
 		{
 			Assembly editorAssembly = typeof(UnityEditor.Editor).Assembly;
@@ -109,7 +133,7 @@ public static class ToolbarUtility
 				}
 			}
 
-			int newSceneIndex = EditorGUILayout.Popup(sceneIndex, _sceneNames, GUILayout.Width(200.0f));
+			int newSceneIndex = EditorGUILayout.Popup(sceneIndex, _sceneNames, GUILayout.Width(100.0f));
 			if (newSceneIndex != sceneIndex)
 			{
 				if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
@@ -119,7 +143,7 @@ public static class ToolbarUtility
 			}
 		}
 
-		if (GUILayout.Button("Intro", GUILayout.Width(50)))
+/*		if (GUILayout.Button("Intro", GUILayout.Width(50)))
 		{
 			EditorSceneManager.OpenScene("Assets/Scenes/Intro.unity");
 		}
@@ -135,11 +159,36 @@ public static class ToolbarUtility
 		if (GUILayout.Button("Game", GUILayout.Width(50)))
 		{
 			EditorSceneManager.OpenScene("Assets/Scenes/Game.unity");
-		}
+		}*/
 		if (GUILayout.Button("Map", GUILayout.Width(50)))
 		{
 			EditorSceneManager.OpenScene("Assets/Scenes/MapGenerate.unity");
 		}
+		if (GUILayout.Button("TestRoom", GUILayout.Width(80)))
+		{
+			EditorSceneManager.OpenScene("Assets/Scenes/MapGenerate.unity");
+		}
+		// Prefab 빠른 열기
+		if (_prefabNames != null && _prefabNames.Length > 0)
+		{
+			GUILayout.Space(10);
+			EditorGUILayout.LabelField("Prefabs", GUILayout.Width(60));
+			int prefabIndex = -1;
+			int newPrefabIndex = EditorGUILayout.Popup(prefabIndex, _prefabNames, GUILayout.Width(100.0f));
+			if (newPrefabIndex >= 0)
+			{
+				UnityEngine.Object prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(_prefabPaths[newPrefabIndex]);
+				if (prefab != null)
+				{
+					AssetDatabase.OpenAsset(prefab);
+				}
+			}
+		}
+
+		RoomPresetArea.DrawGizmoArea = GUILayout.Toggle(RoomPresetArea.DrawGizmoArea, "Area", "Button", GUILayout.Width(50));
+		RoomPresetDoor.DrawGizmoDoor = GUILayout.Toggle(RoomPresetDoor.DrawGizmoDoor, "Door", "Button", GUILayout.Width(50));
+		PropSpawner.DrawGizmoProp = GUILayout.Toggle(PropSpawner.DrawGizmoProp, "Prop", "Button", GUILayout.Width(50));
+
 		EditorGUILayout.EndHorizontal();
 	}
 }

@@ -305,8 +305,6 @@ public class JsonLoader
 }
 public class MapGenerator : SingletonMono<MapGenerator>
 {
-	public bool drawPropGizmos = true; // Gizmos를 그릴지 여부
-	public bool drawMapGizmos = true; // Gizmos를 그릴지 여부
 	public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
 	public RoomGenerator generator = new RoomGenerator();
 	public int mapId = 1;

@@ -11,15 +11,20 @@ namespace RA {
 		public PullLine pullLine;
 		public RAPlayer player;
 		public Rigidbody characterController;
-		public RAProp pickedProp = null;
-		public RAProp viewTargetProp = null;
+		public RAProp grabedProp = null;
+		public RAProp onAimProp = null;
 
 		public InteractableObject interactableObject = null;
 
-		public Vector3 m_grabPointLocal = new Vector3(); 
+		public Vector3 m_grabPointLocal = new Vector3();
 
-		public float grapRange = 1;
+		public float grapRangeMax = 3f;
+		public float grapRangeMin = 0.5f;
+		public float grapRange = 1f;
 		public float strength = 300;
+
+		public bool isGrabbed => grabedProp != null;
+		public bool isOnAimProp => onAimProp != null;
 
 		public void Awake()
 		{
@@ -27,9 +32,79 @@ namespace RA {
 			characterController = GetComponent<Rigidbody>();
 		}
 
+		public void CameraRaycast(out RaycastHit hit)
+		{
+			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
+			{
+				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Interactable"))
+				{
+					OnHitInteractableObject(hit);
+				}
+
+				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("PropCollider"))
+				{
+					OnHitPropCollider(hit);
+				}
+			}
+		}
+
+		public void OnHitPropCollider(RaycastHit hit)
+		{
+			RAPropCollider propCol = hit.collider.GetComponent<RAPropCollider>();
+			if (propCol != null)
+			{
+				RAProp prop = propCol.prop;
+				ChangeAimProp(prop);
+			}
+		}
+
+		public void ChangeAimProp(RAProp newProp)
+		{
+			if (isOnAimProp)
+			{
+				grabedProp = newProp;
+			}
+			else
+			{
+				grabedProp = newProp;
+			}
+		}
+
+		public void OnHitInteractableObject(RaycastHit hit)
+		{
+			InteractableObject intObj = hit.collider.GetComponent<InteractableObject>();
+			if (intObj != null)
+			{
+				if (interactableObject != intObj)
+				{
+					if (interactableObject != null)
+					{
+						interactableObject.OnOutAim();
+						GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+						CGameManager.Instance.roomEventBus.Publish(ev);
+					}
+					interactableObject = intObj;
+					interactableObject.OnInAim();
+					GameRoomEvent_OnInteractAimIn e = new GameRoomEvent_OnInteractAimIn() { interactableObject = interactableObject };
+					CGameManager.Instance.roomEventBus.Publish(e);
+				}
+			}
+			else
+			{
+				if (interactableObject != null)
+				{
+					interactableObject.OnOutAim();
+					GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+					CGameManager.Instance.roomEventBus.Publish(ev);
+					interactableObject = null;
+				}
+			}
+		}
+
 		public void PlayerInput()
 		{
-			RaycastHit hit;
+			CameraRaycast(out RaycastHit hit);
+			/*RaycastHit hit;
 			bool isSelected = false;
 			bool intObjSelected = false;
 			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
@@ -108,11 +183,7 @@ namespace RA {
 				GameRoomEvent_OnDropProp ev = new GameRoomEvent_OnDropProp();
 				CGameManager.Instance.roomEventBus.Publish(ev);
 				CmdDropProp();
-			}
-		}
-
-		public void UpdatePickedProp()
-		{
+			}*/
 		}
 
 		Vector3 GetPickDest()
@@ -123,16 +194,20 @@ namespace RA {
 
 		public Vector3 GetGrabPointWorldPosition()
 		{
-			if (pickedProp != null)
+			if (grabedProp != null)
 			{
-				return pickedProp.transform.TransformPoint(m_grabPointLocal);
+				return grabedProp.transform.TransformPoint(m_grabPointLocal);
 			}
 			return Vector3.zero;
 		}
 
 		public void Update()
 		{
-			if (pickedProp != null)
+			if (player.isLocalPlayer)
+			{
+				PlayerInput();
+			}
+			if (grabedProp != null)
 			{
 				UpdatePickupLineEffect();
 			}
@@ -147,11 +222,7 @@ namespace RA {
 
 		public void FixedUpdate()
 		{
-			if(player.isLocalPlayer)
-			{
-				PlayerInput();
-			}
-			if (pickedProp != null)
+			if (grabedProp != null)
 			{
 				UpdateGrabedProp();
 			}
@@ -170,7 +241,7 @@ namespace RA {
 			Vector3 forceDirection = direction;
 			float power = strength;
 
-			pickedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
+			grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 		}
 
 		public void UpdatePickupLineEffect()
@@ -192,7 +263,7 @@ namespace RA {
 		{
 			if (propIdentity != null)
 			{
-				pickedProp = propIdentity.GetComponent<RAProp>();
+				grabedProp = propIdentity.GetComponent<RAProp>();
 				m_grabPointLocal = _grabPointLocal;
 			}
 		}
@@ -212,14 +283,14 @@ namespace RA {
 		[Command]
 		public void CmdDropProp()
 		{
-			pickedProp = null;
+			grabedProp = null;
 			RpcDropProp();
 		}
 
 		[ClientRpc]
 		public void RpcDropProp()
 		{
-			pickedProp = null;
+			grabedProp = null;
 		}
 	}
 }

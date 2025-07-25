@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Toolbars;
 using UnityEngine;
 
 public class RoomPresetDoor : MonoBehaviour
 {
 	public float spawnChance = 1f;
 	//Door가 바라보는 방향을 GIzmo로 표시
-
+#if UNITY_EDITOR
+	public static bool DrawGizmoDoor;
 	void OnDrawGizmos()
 	{
-		MapGenerator mapManager = MapGenerator.Instance;
-		if (mapManager != null && !mapManager.drawMapGizmos)
+		if (!DrawGizmoDoor)
 		{
 			return;
 		}
@@ -34,7 +35,7 @@ public class RoomPresetDoor : MonoBehaviour
 		Gizmos.DrawLine(end, end + Quaternion.Euler(0, 150, 0) * direction * 0.3f);
 		Gizmos.DrawLine(end, end + Quaternion.Euler(0, -150, 0) * direction * 0.3f);
 	}
-
+#endif
 
 
 	public void RotateDoor(float _v)
