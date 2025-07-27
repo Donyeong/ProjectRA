@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.Components", "Mirror
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECM2.Walkthrough", "ECM2.Walkthrough.csproj", "{D940B4AC-8DFD-1A3E-2F56-825D8785E04D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.Examples", "Mirror.Examples.csproj", "{0406C258-A617-2538-52BF-1F61A60182B1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.Editor", "Mirror.Editor.csproj", "{64C38863-E313-989E-F6C9-9B92FF581529}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirror.Transports", "Mirror.Transports.csproj", "{55E4D788-1809-92C4-593C-365A977C3415}"
@@ -81,10 +79,6 @@ Global
 		{D940B4AC-8DFD-1A3E-2F56-825D8785E04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D940B4AC-8DFD-1A3E-2F56-825D8785E04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D940B4AC-8DFD-1A3E-2F56-825D8785E04D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0406C258-A617-2538-52BF-1F61A60182B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0406C258-A617-2538-52BF-1F61A60182B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0406C258-A617-2538-52BF-1F61A60182B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0406C258-A617-2538-52BF-1F61A60182B1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{64C38863-E313-989E-F6C9-9B92FF581529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{64C38863-E313-989E-F6C9-9B92FF581529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64C38863-E313-989E-F6C9-9B92FF581529}.Release|Any CPU.ActiveCfg = Release|Any CPU
