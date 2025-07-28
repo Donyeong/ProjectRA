@@ -39,21 +39,32 @@ public class MapManager : SingletonMono<MapManager>
 		{
 			foreach (var spawner in room.spawner)
 			{
-				SpawnItem(itemPrefab, room.position + spawner.positionOffset, Random.RandomRange(0, 3));
+				SpawnItem(itemPrefab, room.position + room.rotation * spawner.positionOffset, Random.RandomRange(0, 3));
 			}
+			
 		}
 
 		RANetworkManager.instance.localPlayer.transform.position = Vector3.zero;
 
 
+
+		GameObject cart = ResourceManager.Instance.LoadResource<GameObject>("Props/Cart");
+		SpawnItem(cart, Vector3.up);
+
+
 	}
 
 	[Server]
-	public void SpawnItem(GameObject _prefab, Vector3 position, int propId)
+	public void SpawnItem(GameObject _prefab, Vector3 position, int propId = -1)
 	{
 		GameObject item = Instantiate(_prefab, position, Quaternion.identity);
 		RAProp prop = item.GetComponent<RAProp>();
-		prop.ServerSetProp(propId);
+		if (propId != -1) {
+			prop.ServerSetProp(propId);
+		} else
+		{
+			prop.isInit = true;
+		}
 		NetworkServer.Spawn(item);
 	}
 }
