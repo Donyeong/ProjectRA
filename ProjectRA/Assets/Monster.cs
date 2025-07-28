@@ -9,6 +9,13 @@ public class Monster : MonoBehaviour
 	private NavMeshAgent agent;
 	private float timer;
 
+	public Animator animator;
+
+	private void Awake()
+	{
+		animator = GetComponentInChildren<Animator>();
+	}
+
 	void Start()
 	{
 		agent = GetComponent<NavMeshAgent>();
@@ -19,6 +26,12 @@ public class Monster : MonoBehaviour
 	void Update()
 	{
 		timer += Time.deltaTime;
+
+		if (animator != null)
+		{
+			animator.SetBool("param_idletowalk", true);
+		}
+
 		if (!agent.pathPending && agent.remainingDistance < 0.5f && timer >= wanderInterval)
 		{
 			MoveToRandomPosition();

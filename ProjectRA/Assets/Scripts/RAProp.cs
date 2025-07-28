@@ -9,6 +9,13 @@ public enum ePropState
 	PickedUp,
 }
 
+public enum ePropType
+{
+	Normal,
+	Cart,
+	MapObject
+}
+
 public class RAProp : NetworkBehaviour
 {
 	public int hp = 100;
@@ -24,6 +31,8 @@ public class RAProp : NetworkBehaviour
 	public RAPropCollider propCollider;
 	[SyncVar]
 	public int prop_id = -1;
+
+	public ePropType propType = ePropType.Normal;
 
 	public bool isInit = false;
 

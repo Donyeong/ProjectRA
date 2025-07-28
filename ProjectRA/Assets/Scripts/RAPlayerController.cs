@@ -22,6 +22,7 @@ namespace RA {
 		public float grapPowerRangeMin = 0f;
 		public float grapRange = 1f;
 		public float strength = 300;
+		public float cartStrength = 3000;
 		public float grapMaxRange = 2f;
 
 		public bool isGrabbed => grabedProp != null;
@@ -303,6 +304,10 @@ namespace RA {
 				forceDirection = forceDirection.normalized * grapPowerRangeMin;
 			}
 			float power = strength;
+			if(grabedProp.propType == ePropType.Cart)
+			{
+				power = cartStrength;
+			}
 
 			grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 		}
