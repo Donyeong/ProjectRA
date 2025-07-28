@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEditor.Progress;
@@ -9,6 +10,7 @@ public class MapManager : SingletonMono<MapManager>
 {
 	public GameObject lobbyMap;
 	public MapGenerator mapGenerator;
+	public NavMeshSurface navMeshSurface;
 
 	public void Awake()
 	{
@@ -22,11 +24,29 @@ public class MapManager : SingletonMono<MapManager>
 	{
 	}
 
+	float spawnCool = 0;
+
+	public void Update()
+	{
+		if(CGameManager.Instance.gameState == GameState.Game)
+		{
+			spawnCool += Time.deltaTime;
+			if (spawnCool < 0)
+			{
+				spawnCool = Random.RandomRange(60,120);
+				SpawnMonster();
+			}
+		}
+	}
+
 	public void GameMapStart(GameRoomEvent_OnStartButtonClick e)
 	{
 		Generate();
 		lobbyMap.SetActive(false);
+		navMeshSurface.BuildNavMesh();
 		Debug.Log("MapManager Start ");
+
+		SpawnMonster();
 	}
 
 	public void Generate()
@@ -49,9 +69,27 @@ public class MapManager : SingletonMono<MapManager>
 
 
 		GameObject cart = ResourceManager.Instance.LoadResource<GameObject>("Props/Cart");
-		SpawnItem(cart, Vector3.up);
+		SpawnItem(cart, Vector3.up + Vector3.right);
+	}
 
+	public void SpawnMonster()
+	{
+		GameObject mob = ResourceManager.Instance.LoadResource<GameObject>("Monster/mob");
+		CmdSpawnMonster(mob, GetRandomSpawnPoint());
+	}
 
+	public Vector3 GetRandomSpawnPoint()
+	{
+		MonsterSpawner[] spawners = FindObjectsOfType<MonsterSpawner>();
+		if (spawners.Length == 0)
+		{
+			Debug.LogWarning("No MonsterSpawner found in the scene.");
+			return Vector3.zero;
+		}
+		int randomIndex = Random.Range(0, spawners.Length);
+		Vector3 spawnPosition = spawners[randomIndex].transform.position;
+		Debug.Log($"Random spawn position: {spawnPosition}");
+		return spawnPosition;
 	}
 
 	[Server]
@@ -65,6 +103,13 @@ public class MapManager : SingletonMono<MapManager>
 		{
 			prop.isInit = true;
 		}
+		NetworkServer.Spawn(item);
+	}
+
+	[Server]
+	public void CmdSpawnMonster(GameObject _prefab, Vector3 position)
+	{
+		GameObject item = Instantiate(_prefab, position, Quaternion.identity);
 		NetworkServer.Spawn(item);
 	}
 }

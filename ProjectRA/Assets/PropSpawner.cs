@@ -16,7 +16,7 @@ public class PropSpawner : MonoBehaviour
 		}
 		Gizmos.color = new Color(1, 0, 0, 0.6f);
 
-		Gizmos.DrawCube(transform.position, transform.rotation * transform.localScale);
+		Gizmos.DrawCube(transform.position + Vector3.up * (transform.localScale.y / 2), transform.rotation * transform.localScale);
 	}
 #endif
 }

@@ -2,8 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameState
+{
+	Lobby,
+	Room,
+	Game,
+	Result
+}
 public class CGameManager : SingletonMono<CGameManager>
 {
+	public GameState gameState = GameState.Lobby;
 	public RAPlayer localPlayer => RANetworkManager.instance.localPlayer;
 	public EventBus<RoomEvent> roomEventBus = new EventBus<RoomEvent>();
 	public EventBus<GameEvent> gameEventBus = new EventBus<GameEvent>();

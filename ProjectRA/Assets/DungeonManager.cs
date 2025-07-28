@@ -15,5 +15,7 @@ public class DungeonManager : SingletonMono<DungeonManager>
 	{
 		MapManager.Instance.GameMapStart(e);
 		CGameManager.Instance.localPlayer.playerMovement.Warp(Vector3.zero);
+
+		CGameManager.Instance.gameState = GameState.Game;
 	}
 }
