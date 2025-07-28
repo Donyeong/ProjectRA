@@ -21,8 +21,14 @@ public class RoomPreset : MonoBehaviour
 		}
 	}
 
+	public RoomPresetDoor[] GetDoors()
+	{
+		return GetComponentsInChildren<RoomPresetDoor>();
+	}
+
 	public string GenerateRoomInfo()
 	{
+		SetDoorId();
 		RoomPresetInfo roomInfo = new RoomPresetInfo();
 
 		RoomPresetDoor[] doors = GetComponentsInChildren<RoomPresetDoor>();
@@ -37,7 +43,8 @@ public class RoomPreset : MonoBehaviour
 				DoorInfo doorInfo = new DoorInfo
 				{
 					position = doorPosition,
-					direction = doorDirection
+					direction = doorDirection,
+					doorId = door.doorId,
 				};
 
 				roomInfo.doors.Add(doorInfo);
@@ -109,6 +116,25 @@ public class RoomPresetEditor : Editor
 		if (GUILayout.Button("Set Door UniqueID"))
 		{
 			roomPreset.SetDoorId();
+			// 프리팹 저장
+			GameObject go = roomPreset.gameObject;
+			var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+			if (prefabStage != null)
+			{
+				// Prefab Stage에서 작업 중일 때 자동 저장됨
+				EditorUtility.SetDirty(go);
+			}
+			else
+			{
+				// 인스턴스에서 프리팹으로 변경사항 적용
+				var prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
+				if (prefab != null)
+				{
+					PrefabUtility.ApplyPrefabInstance(go, InteractionMode.UserAction);
+					EditorUtility.SetDirty(prefab);
+					AssetDatabase.SaveAssets();
+				}
+			}
 		}
 	}
 

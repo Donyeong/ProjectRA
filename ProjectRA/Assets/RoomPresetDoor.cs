@@ -7,6 +7,7 @@ using UnityEngine;
 public class RoomPresetDoor : MonoBehaviour
 {
 	public int doorId;
+	public GameObject door;
 	public GameObject wall;
 	public float spawnChance = 1f;
 	//Door가 바라보는 방향을 GIzmo로 표시
@@ -45,6 +46,22 @@ public class RoomPresetDoor : MonoBehaviour
 		transform.Rotate(0, _v, 0, Space.World);
 	}
 
+	public void SetDoorMode(bool isDoor)
+	{
+		if(isDoor)
+		{
+			if(door != null)
+				door.SetActive(true);
+			if (wall != null)
+				wall.SetActive(false);
+		} else
+		{
+			if (wall != null)
+				wall.SetActive(true);
+			if (door != null)
+				door.SetActive(false);
+		}
+	}
 
 }
 
@@ -66,10 +83,15 @@ public class RoomPresetDoorEditor : Editor
 			Undo.RecordObject(door.transform, "D-90도");
 			door.RotateDoor(-90);
 		}
-		if (GUILayout.Button("-90도"))
+		if (GUILayout.Button("SetDoorMode"))
 		{
-			Undo.RecordObject(door.transform, "D-90도");
-			door.RotateDoor(-90);
+			Undo.RecordObject(door.transform, "D-SetDoorMode");
+			door.SetDoorMode(true);
+		}
+		if (GUILayout.Button("SetWallMode"))
+		{
+			Undo.RecordObject(door.transform, "D-SetWallMode");
+			door.SetDoorMode(false);
 		}
 	}
 }

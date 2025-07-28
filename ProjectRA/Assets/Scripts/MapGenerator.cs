@@ -26,6 +26,7 @@ public class DoorInfo
 	public int doorId;
 	public Vector3 position;
 	public Vector3 direction;
+	public bool doorMode;
 }
 [Serializable]
 public class RoomPresetInfo
@@ -52,7 +53,9 @@ public class RoomInfo : RoomPresetInfo
 			doors.Add(new DoorInfo
 			{
 				position = d.position,
-				direction = d.direction
+				direction = d.direction,
+				doorMode = true,
+				doorId = d.doorId
 			});
 		}
 		spawner = new List<PropSpawnerInfo>(preset.spawner);
@@ -186,7 +189,7 @@ public class RoomGenerator
 			RoomInfo defalutRoom = new RoomInfo();
 
 			defalutRoom.CopyFrom(startRoomPreset);
-			AddRoom(defalutRoom);
+			AddRoom(defalutRoom, null);
 			if (GenRandomRoom())
 			{
 				break;
@@ -230,7 +233,7 @@ public class RoomGenerator
 			{
 				roomInfo.position = targetDoor.roomInfo.position + targetDoor.doorInfo.position - door.position;
 
-				if (AddRoom(roomInfo))
+				if (AddRoom(roomInfo, door))
 				{
 					Debug.Log($"Add Room {randomPreset.preset_key}");
 					added = true;
@@ -246,10 +249,15 @@ public class RoomGenerator
 				openedDoors.Enqueue(targetDoor);
 			}
 		}
+
+		foreach(var opnedDoor in openedDoors)
+		{
+			opnedDoor.doorInfo.doorMode = false;
+		}
 		return roomCount == rooms.Count;
 	}
 
-	public bool AddRoom(RoomInfo _roomInfo)
+	public bool AddRoom(RoomInfo _roomInfo, DoorInfo entrance)
 	{
 		if(IsOverlapping(_roomInfo))
 		{
@@ -264,6 +272,10 @@ public class RoomGenerator
 
 		foreach(var door in _roomInfo.doors)
 		{
+			if(door == entrance)
+			{
+				continue;
+			}
 			OpenedDoorInfo openedDoor = new OpenedDoorInfo();
 			openedDoor.roomInfo = _roomInfo;
 			openedDoor.doorInfo = door;
@@ -320,7 +332,7 @@ public class MapGenerator : SingletonMono<MapGenerator>
 
 	void Start()
 	{
-		generator.GenerateRooms(mapId, mapSize);
+		//generator.GenerateRooms(mapId, mapSize);
 	}
 
 	public void GenerateRooms()
@@ -350,6 +362,22 @@ public class MapGenerator : SingletonMono<MapGenerator>
 			GameObject roomObject = Instantiate(roomPrefab, roomInfo.position, roomInfo.rotation, mapHolder.transform);
 			roomObject.transform.localScale = Vector3.one; // 스케일 조정
 			roomObject.name = roomInfo.preset_key;
+
+			RoomPreset roomPreset=  roomObject.GetComponent<RoomPreset>();
+			var presetDoors =  roomPreset.GetDoors();
+			foreach(var doorInfo in roomInfo.doors)
+			{
+				RoomPresetDoor door = presetDoors.FirstOrDefault(i => i.doorId == doorInfo.doorId);
+				if (door != null)
+				{
+					door.SetDoorMode(doorInfo.doorMode);
+					//Debug.Log("방 오브젝트에 문 정보 설정: " + doorInfo.doorId + ", 모드: " + doorInfo.doorMode);
+				}
+				else
+				{
+					Debug.LogWarning($"{roomInfo.preset_key},doorId {doorInfo.doorId}에 해당하는 Door가 프리팹에 없습니다.");
+				}
+			}
 		}
 		Debug.Log("방 오브젝트 생성 완료");
 	}
