@@ -137,6 +137,7 @@ public class OpenedDoorInfo
 }
 public class RoomGenerator
 {
+	public RoomPresetInfo startRoomPreset = null;
 	public List<RoomPresetInfo> roomPresets = new List<RoomPresetInfo>();
 	public Vector2 mapSize = new Vector2(100, 100);
 	public int roomCount = 50;
@@ -146,7 +147,7 @@ public class RoomGenerator
 	public Queue<OpenedDoorInfo> openedDoors = new Queue<OpenedDoorInfo>();
 
 
-	public void LoadPresetData(int mapId)
+	public void LoadPresetData(int mapId, int startRoom)
 	{
 		List<RefRoom> refRooms = RefDataManager.Instance.GetRefDatas<RefRoom>();
 		List<RefRoom> rooms = refRooms.FindAll(x => x.map_id == mapId);
@@ -155,29 +156,36 @@ public class RoomGenerator
 		{
 			string preset_key = $"RoomPresets/{room.room_preset}";
 			RoomPresetInfo preset = JsonLoader.LoadJsonFromResources<RoomPresetInfo>(preset_key);
-			roomPresets.Add(preset);
+			if (room.room_id == startRoom)
+			{
+				startRoomPreset = preset;
+			}
+			else
+			{
+				roomPresets.Add(preset);
+			}
 		}
 	}
 
 	public void GenerateRooms(int mapId, int mapSize)
 	{
-		//최대 10회 시도
-		for (int i = 0; i < 10; i++)
+		//최대 30회 시도
+		for (int i = 0; i < 30; i++)
 		{
-			roomCount = mapSize;
-			LoadPresetData(mapId);
-			rooms.Clear();
-			bounds.Clear();
-			openedDoors.Clear();
 
 			List<RefMap> refMaps = RefDataManager.Instance.GetRefDatas<RefMap>();
 			RefMap map = refMaps.First(i => i.map_id == mapId);
 			List<RefRoom> refRooms = RefDataManager.Instance.GetRefDatas<RefRoom>();
 			RefRoom refStartRoom = refRooms.First(i => i.room_id == map.start_room_id);
-			RoomPresetInfo defaultRoomPreset = roomPresets.First(i => i.preset_key == refStartRoom.room_preset);
+
+			roomCount = mapSize;
+			LoadPresetData(mapId, map.start_room_id);
+			rooms.Clear();
+			bounds.Clear();
+			openedDoors.Clear();
 			RoomInfo defalutRoom = new RoomInfo();
 
-			defalutRoom.CopyFrom(defaultRoomPreset);
+			defalutRoom.CopyFrom(startRoomPreset);
 			AddRoom(defalutRoom);
 			if (GenRandomRoom())
 			{
@@ -188,7 +196,7 @@ public class RoomGenerator
 
 	public bool GenRandomRoom()
 	{
-		int maxLoop = 3000;
+		int maxLoop = 1500;
 		int loopCount = 0;
 		while (rooms.Count < roomCount)
 		{
@@ -238,7 +246,7 @@ public class RoomGenerator
 				openedDoors.Enqueue(targetDoor);
 			}
 		}
-		return true;
+		return roomCount == rooms.Count;
 	}
 
 	public bool AddRoom(RoomInfo _roomInfo)

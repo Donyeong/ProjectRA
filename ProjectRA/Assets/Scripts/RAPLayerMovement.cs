@@ -69,6 +69,11 @@ public class RAPLayerMovement : NetworkBehaviour
 		character = GetComponent<Character>();
 	}
 
+	public void Warp(Vector3 position)
+	{
+		character.SetPosition(position);
+	}
+
 	void Update()
 	{
 		if (isLocalPlayer)
@@ -138,11 +143,11 @@ public class RAPLayerMovement : NetworkBehaviour
 
 			if (Input.GetKey(KeyCode.LeftShift))
 			{
-				character.maxWalkSpeed = moveSpeed;
+				character.maxWalkSpeed = runMoveSeped;
 			}
 			else
 			{
-				character.maxWalkSpeed = runMoveSeped;
+				character.maxWalkSpeed = moveSpeed;
 			}
 			character.maxWalkSpeedCrouched = crouchedSpeed;
 

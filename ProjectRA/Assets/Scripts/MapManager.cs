@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEditor.Progress;
 
-public class MapManager : MonoBehaviour
+public class MapManager : SingletonMono<MapManager>
 {
 	public GameObject lobbyMap;
 	public MapGenerator mapGenerator;
@@ -20,10 +20,9 @@ public class MapManager : MonoBehaviour
 
 	public void Start()
 	{
-		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnStartButtonClick>(OnStart);
 	}
 
-	public void OnStart(GameRoomEvent_OnStartButtonClick e)
+	public void GameMapStart(GameRoomEvent_OnStartButtonClick e)
 	{
 		Generate();
 		lobbyMap.SetActive(false);

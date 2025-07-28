@@ -30,6 +30,7 @@ public class RAPlayer : Actor
 	public Vector3 viewDir = Vector3.forward;
 
 	public PlayerAnimController playerAnimController;
+	public RAPLayerMovement playerMovement;
 
 	private void Awake()
 	{
@@ -39,6 +40,7 @@ public class RAPlayer : Actor
 			ip = NetworkManager.singleton.networkAddress;
 		}
 		playerAnimController = GetComponentInChildren<PlayerAnimController>();
+		playerMovement = GetComponent<RAPLayerMovement>();
 	}
 
 	private void Start()

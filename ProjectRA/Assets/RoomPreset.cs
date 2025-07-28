@@ -9,6 +9,18 @@ public class RoomPreset : MonoBehaviour
 {
 	[TextArea(5, 20)]
 	public string jsonInfo;
+
+	public void SetDoorId()
+	{
+		RoomPresetDoor[] doors = GetComponentsInChildren<RoomPresetDoor>();
+
+		int uniqueId = 0;
+		foreach (RoomPresetDoor door in doors)
+		{
+			door.doorId = uniqueId++;
+		}
+	}
+
 	public string GenerateRoomInfo()
 	{
 		RoomPresetInfo roomInfo = new RoomPresetInfo();
@@ -93,6 +105,10 @@ public class RoomPresetEditor : Editor
 
 			File.WriteAllText(fullPath, roomPreset.jsonInfo);
 			AssetDatabase.Refresh(); // 에셋 갱신
+		}
+		if (GUILayout.Button("Set Door UniqueID"))
+		{
+			roomPreset.SetDoorId();
 		}
 	}
 

@@ -18,13 +18,17 @@ namespace RA {
 
 		public Vector3 m_grabPointLocal = new Vector3();
 
-		public float grapRangeMax = 3f;
-		public float grapRangeMin = 0.5f;
+		public float grapPowerRangeMax = 1f;
+		public float grapPowerRangeMin = 0f;
 		public float grapRange = 1f;
 		public float strength = 300;
+		public float grapMaxRange = 2f;
 
 		public bool isGrabbed => grabedProp != null;
 		public bool isOnAimProp => onAimProp != null;
+		public bool isOnAimInteractable => interactableObject != null;
+
+		public LayerMask grabMask;
 
 		public void Awake()
 		{
@@ -34,16 +38,48 @@ namespace RA {
 
 		public void CameraRaycast(out RaycastHit hit)
 		{
-			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
+			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, grapMaxRange, grabMask))
 			{
 				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Interactable"))
 				{
 					OnHitInteractableObject(hit);
+				} else
+				{
+					if (interactableObject != null)
+					{
+						interactableObject.OnOutAim();
+						GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+						CGameManager.Instance.roomEventBus.Publish(ev);
+						interactableObject = null;
+					}
 				}
 
 				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("PropCollider"))
 				{
 					OnHitPropCollider(hit);
+				} else
+				{
+					if (onAimProp != null)
+					{
+						Debug.Log("false");
+						onAimProp.Select(false);
+						onAimProp = null;
+					}
+				}
+			} else
+			{
+				if (interactableObject != null)
+				{
+					interactableObject.OnOutAim();
+					GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
+					CGameManager.Instance.roomEventBus.Publish(ev);
+					interactableObject = null;
+				}
+				if (onAimProp != null)
+				{
+					Debug.Log("false");
+					onAimProp.Select(false);
+					onAimProp = null;
 				}
 			}
 		}
@@ -62,11 +98,18 @@ namespace RA {
 		{
 			if (isOnAimProp)
 			{
-				grabedProp = newProp;
+				if(onAimProp != newProp)
+				{
+					Debug.Log("false2");
+					onAimProp.Select(false);
+					onAimProp = newProp;
+					onAimProp.Select(true);
+				}
 			}
 			else
 			{
-				grabedProp = newProp;
+				onAimProp = newProp;
+				onAimProp.Select(true);
 			}
 		}
 
@@ -87,16 +130,6 @@ namespace RA {
 					interactableObject.OnInAim();
 					GameRoomEvent_OnInteractAimIn e = new GameRoomEvent_OnInteractAimIn() { interactableObject = interactableObject };
 					CGameManager.Instance.roomEventBus.Publish(e);
-				}
-			}
-			else
-			{
-				if (interactableObject != null)
-				{
-					interactableObject.OnOutAim();
-					GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
-					CGameManager.Instance.roomEventBus.Publish(ev);
-					interactableObject = null;
 				}
 			}
 		}
@@ -184,6 +217,27 @@ namespace RA {
 				CGameManager.Instance.roomEventBus.Publish(ev);
 				CmdDropProp();
 			}*/
+
+			if(isOnAimInteractable && Input.GetKeyDown(KeyCode.E))
+			{
+				interactableObject.OnInteract();
+			}
+
+			if(isOnAimProp && Input.GetKeyDown(KeyCode.Mouse0) && !isGrabbed)
+			{
+				Vector3 grabPointLocal = onAimProp.transform.InverseTransformPoint(hit.point);
+				CmdPickUpProp(onAimProp.GetComponent<NetworkIdentity>(), grabPointLocal);
+				GameRoomEvent_OnGrabProp ev = new GameRoomEvent_OnGrabProp();
+				ev.targetProp = onAimProp;
+				CGameManager.Instance.roomEventBus.Publish(ev);
+			}
+
+			if(Input.GetKey(KeyCode.Mouse0) == false && isGrabbed)
+			{
+				GameRoomEvent_OnDropProp ev = new GameRoomEvent_OnDropProp();
+				CGameManager.Instance.roomEventBus.Publish(ev);
+				CmdDropProp();
+			}
 		}
 
 		Vector3 GetPickDest()
@@ -207,6 +261,10 @@ namespace RA {
 			{
 				PlayerInput();
 			}
+		}
+
+		public void LateUpdate()
+		{
 			if (grabedProp != null)
 			{
 				UpdatePickupLineEffect();
@@ -239,6 +297,11 @@ namespace RA {
 			Debug.DrawLine(grabPoint, pickDest);
 
 			Vector3 forceDirection = direction;
+			if(forceDirection.magnitude > grapPowerRangeMax) {
+				forceDirection = forceDirection.normalized * grapPowerRangeMax;
+			} else if (forceDirection.magnitude < grapPowerRangeMin) {
+				forceDirection = forceDirection.normalized * grapPowerRangeMin;
+			}
 			float power = strength;
 
 			grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);

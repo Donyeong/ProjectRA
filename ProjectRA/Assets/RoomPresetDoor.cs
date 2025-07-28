@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class RoomPresetDoor : MonoBehaviour
 {
+	public int doorId;
+	public GameObject wall;
 	public float spawnChance = 1f;
 	//Door가 바라보는 방향을 GIzmo로 표시
 #if UNITY_EDITOR
@@ -58,6 +60,11 @@ public class RoomPresetDoorEditor : Editor
 		{
 			Undo.RecordObject(door.transform, "D+90도");
 			door.RotateDoor(90);
+		}
+		if (GUILayout.Button("-90도"))
+		{
+			Undo.RecordObject(door.transform, "D-90도");
+			door.RotateDoor(-90);
 		}
 		if (GUILayout.Button("-90도"))
 		{

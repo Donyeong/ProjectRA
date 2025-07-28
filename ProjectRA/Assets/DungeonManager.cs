@@ -1,18 +1,19 @@
+using Edgegap;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonManager : MonoBehaviour
+public class DungeonManager : SingletonMono<DungeonManager>
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	// Start is called before the first frame update
+	void Start()
+	{
+		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnStartButtonClick>(OnStart);
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public void OnStart(GameRoomEvent_OnStartButtonClick e)
+	{
+		MapManager.Instance.GameMapStart(e);
+		CGameManager.Instance.localPlayer.playerMovement.Warp(Vector3.zero);
+	}
 }
