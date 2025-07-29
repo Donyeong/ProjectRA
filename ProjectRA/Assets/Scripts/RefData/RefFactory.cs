@@ -35,9 +35,33 @@ namespace ReferenceTable
 		}
 
 
+		if (table_name == "RefMonster")
+		{
+			return CreateRefDataList<RefMonster>(count);
+		}
+
+
+		if (table_name == "RefProp")
+		{
+			return CreateRefDataList<RefProp>(count);
+		}
+
+
+		if (table_name == "RefPropSpawner")
+		{
+			return CreateRefDataList<RefPropSpawner>(count);
+		}
+
+
 		if (table_name == "RefRoom")
 		{
 			return CreateRefDataList<RefRoom>(count);
+		}
+
+
+		if (table_name == "RefString")
+		{
+			return CreateRefDataList<RefString>(count);
 		}
 
 

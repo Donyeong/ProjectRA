@@ -50,16 +50,15 @@ public class VoiceChatManager : SingletonMono<VoiceChatManager>
 	public string localPlayerId = String.Empty;
 	// Start is called before the first frame update
 	void Start()
-    {
-
+	{
+		VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
+		VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemovedFromChannel;
+		var channels = VivoxService.Instance.ActiveChannels;
 	}
 
     // Update is called once per frame
     void Update()
     {
-		VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
-		VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemovedFromChannel;
-		var channels = VivoxService.Instance.ActiveChannels;
 	}
 
 	private void OnParticipantAddedToChannel(VivoxParticipant e)
@@ -87,17 +86,20 @@ public class VoiceChatManager : SingletonMono<VoiceChatManager>
 		currentChannelName = channelName;
 	}
 
-	public void Join3DChannel()
+	public async void Join3DChannel(Action callback = null)
 	{
 		if (isJoinedChannel)
 		{
 			ExitVoidChannel();
 		}
 		string channelName = GetChannelNameFromRoom();
-		VivoxService.Instance.JoinPositionalChannelAsync(channelName, ChatCapability.AudioOnly, channel3DSetting.GetChannel3DProperties());
+		await VivoxService.Instance.JoinPositionalChannelAsync(channelName, ChatCapability.AudioOnly, channel3DSetting.GetChannel3DProperties());
 		isJoinedChannel = true;
 		currentChannelName = channelName;
-		
+		if (callback != null)
+		{
+			callback();
+		}
 	}
 
 	public void UpdateMicVolume(int _volume)

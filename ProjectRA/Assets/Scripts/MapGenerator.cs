@@ -1,12 +1,16 @@
+
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor;
 using JetBrains.Annotations;
 using System.Linq;
 using System;
 using UnityEngine.Experimental.Rendering;
 using ReferenceTable;
+
+#if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.Presets;
+#endif
 
 [Serializable]
 public class PropSpawnerInfo
@@ -396,6 +400,7 @@ public class MapGenerator : SingletonMono<MapGenerator>
 		}*/
 	}
 }
+#if UNITY_EDITOR
 [CustomEditor(typeof(MapGenerator))]
 public class MapManagerEditor : Editor
 {
@@ -414,3 +419,4 @@ public class MapManagerEditor : Editor
 		}
 	}
 }
+#endif

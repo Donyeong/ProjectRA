@@ -18,13 +18,21 @@ public enum ePropType
 
 public class RAProp : NetworkBehaviour
 {
+	[SyncVar]
 	public int hp = 100;
+	[SyncVar]
 	public int maxHp = 100;
+	[SyncVar]
 	public int maxPrice;
+	[SyncVar]
 	public int price;
+	[SyncVar]
 	public float weight = 1;
+	[SyncVar]
 	public float minImpactToDamage = 10f;  // 이보다 약한 충돌은 무시
+	[SyncVar]
 	public float damageMultiplier = 10f;  // 강도에 따른 피해량 배수
+	[SyncVar]
 	public int breakLevel = 5;
 
 	public Rigidbody rb;
@@ -107,6 +115,7 @@ public class RAProp : NetworkBehaviour
 	}
 	void OnCollisionEnter(Collision collision)
 	{
+		if (!isServer) return;
 		float impact = collision.relativeVelocity.magnitude;
 
 		// 충돌 표면의 법선 벡터(첫 번째 접촉점 기준)
@@ -149,6 +158,7 @@ public class RAProp : NetworkBehaviour
 			if (price <= 0f)
 			{
 				BreakProp();
+				RpcBreakProp();
 			}
 		}
 	}
@@ -157,5 +167,11 @@ public class RAProp : NetworkBehaviour
 	{
 		ParticleManager.Instance.PlayParticle(eParticleType.PropBreak, transform.position, Quaternion.LookRotation(rb.velocity));
 		Destroy(gameObject);
+	}
+	[ClientRpc]
+	void RpcBreakProp()
+	{
+		if (isServer) return;
+		BreakProp();
 	}
 }

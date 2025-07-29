@@ -307,9 +307,12 @@ namespace RA {
 			if(grabedProp.propType == ePropType.Cart)
 			{
 				power = cartStrength;
+				grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint, ForceMode.Acceleration);
+			} else
+			{
+				grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 			}
 
-			grabedProp.rb.AddForceAtPosition(forceDirection * power, grabPoint);
 		}
 
 		public void UpdatePickupLineEffect()

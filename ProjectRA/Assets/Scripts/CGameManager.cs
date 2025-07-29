@@ -9,6 +9,18 @@ public enum GameState
 	Game,
 	Result
 }
+
+public class CGameUser
+{
+	public string userId;
+	public string userName;
+	public bool joinedVoice = false;
+	public CGameUser()
+	{
+	}
+}
+
+
 public class CGameManager : SingletonMono<CGameManager>
 {
 	public GameState gameState = GameState.Lobby;

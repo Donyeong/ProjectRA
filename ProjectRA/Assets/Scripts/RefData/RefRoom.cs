@@ -17,11 +17,14 @@ namespace ReferenceTable
         
 		public string room_preset {get; set;}
         
+		public int weight {get; set;}
+        
         public override void Deserialize(ByteBuffer br)
         {
 			room_id = br.ReadInteger();
 			map_id = br.ReadInteger();
 			room_preset = br.ReadString();
+			weight = br.ReadInteger();
 ;
         }
     }

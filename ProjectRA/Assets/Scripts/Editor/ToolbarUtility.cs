@@ -70,7 +70,8 @@ public static class ToolbarUtility
 				var _root = _toolbar.GetType().GetField("m_Root", BindingFlags.NonPublic | BindingFlags.Instance);
 				var rawRoot = _root.GetValue(_toolbar);
 				var mRoot = rawRoot as VisualElement;
-				RegisterCallback(ToolbarZone.ToolbarZoneRightAlign.ToString(), OnGUI);
+				RegisterCallback(ToolbarZone.ToolbarZoneLeftAlign.ToString(), OnGUILeft);
+				RegisterCallback(ToolbarZone.ToolbarZoneRightAlign.ToString(), OnGUIRight);
 
 				void RegisterCallback(string root, Action cb)
 				{
@@ -116,7 +117,7 @@ public static class ToolbarUtility
 		}
 	}
 
-	private static void OnGUI()
+	private static void OnGUILeft()
 	{
 		EditorGUILayout.BeginHorizontal();
 		using (new EditorGUI.DisabledScope(Application.isPlaying))
@@ -188,6 +189,21 @@ public static class ToolbarUtility
 		RoomPresetArea.DrawGizmoArea = GUILayout.Toggle(RoomPresetArea.DrawGizmoArea, "Area", "Button", GUILayout.Width(50));
 		RoomPresetDoor.DrawGizmoDoor = GUILayout.Toggle(RoomPresetDoor.DrawGizmoDoor, "Door", "Button", GUILayout.Width(50));
 		PropSpawner.DrawGizmoProp = GUILayout.Toggle(PropSpawner.DrawGizmoProp, "Prop", "Button", GUILayout.Width(50));
+
+		EditorGUILayout.EndHorizontal();
+	}
+
+
+
+	private static void OnGUIRight()
+	{
+		EditorGUILayout.BeginHorizontal();
+		if (GUILayout.Button("GenerateJsonMaps", GUILayout.Width(150)))
+		{
+		}
+		if (GUILayout.Button("Player", GUILayout.Width(50)))
+		{
+		}
 
 		EditorGUILayout.EndHorizontal();
 	}

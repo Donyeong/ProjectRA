@@ -208,7 +208,10 @@ public class RANetworkManager : NetworkManager
 		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
 
 
-		VoiceChatManager.Instance.Join3DChannel();
+		VoiceChatManager.Instance.Join3DChannel(() =>
+		{
+
+		});
 	}
 
 	public override void OnClientDisconnect()

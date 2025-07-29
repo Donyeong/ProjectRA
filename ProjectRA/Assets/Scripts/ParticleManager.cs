@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 public enum eParticleType
 {
@@ -9,25 +10,42 @@ public enum eParticleType
 	PropBreak,
 }
 
-public class ParticleManager : SingletonMono<ParticleManager>
+public class ParticleManager : NetworkBehaviour
 {
+	protected static ParticleManager m_instance;
+
+	public static ParticleManager Instance
+	{
+		get
+		{
+			return m_instance;
+		}
+	}
+
 
 	GameObject[] mParticles;
 	string mResourcePath = "ParticlePrefab/";
 
-	public GameObject PlayParticle(eParticleType playType, Vector3 position, Quaternion rotation)
+	public GameObject PlayParticle(eParticleType playType, Vector3 position, Quaternion rotation, bool networkSync = true)
 	{
 		return Instantiate(mParticles[(int)playType], position, rotation);
 	}
 
-	public GameObject PlayParticle(eParticleType playType, Transform transform)
+	public GameObject PlayParticle(eParticleType playType, Transform transform, bool networkSync = true)
 	{
 		return Instantiate(mParticles[(int)playType], transform);
 	}
 
-	protected override void Awake()
+	[ClientRpc]
+	public void RpcPlayParticle(eParticleType playType, Vector3 position, Quaternion rotation)
 	{
-		base.Awake();
+		PlayParticle(playType, position, rotation, false);
+	}
+
+	protected void Awake()
+	{
+		m_instance = this as ParticleManager;
+		DontDestroyOnLoad(gameObject);
 		LoadParticleResources();
 	}
 

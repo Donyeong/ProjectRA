@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Toolbars;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class RoomPresetDoor : MonoBehaviour
 {
@@ -64,7 +66,7 @@ public class RoomPresetDoor : MonoBehaviour
 	}
 
 }
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(RoomPresetDoor))]
 public class RoomPresetDoorEditor : Editor
 {
@@ -95,3 +97,4 @@ public class RoomPresetDoorEditor : Editor
 		}
 	}
 }
+#endif

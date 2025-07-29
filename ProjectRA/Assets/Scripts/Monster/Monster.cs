@@ -1,8 +1,10 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Monster : MonoBehaviour
+public class Monster : Actor
 {
+	public MonsterFSM monsterFSM;
 	public float wanderRadius = 10f;
 	public float wanderInterval = 2f;
 

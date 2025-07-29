@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 public class MapManager : SingletonMono<MapManager>
 {

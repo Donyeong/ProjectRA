@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class RoomPreset : MonoBehaviour
 {
 	[TextArea(5, 20)]
@@ -89,6 +90,7 @@ public class RoomPreset : MonoBehaviour
 		return jsonRoomInfo;
 	}
 }
+#if UNITY_EDITOR
 
 [CustomEditor(typeof(RoomPreset))]
 public class RoomPresetEditor : Editor
@@ -185,3 +187,5 @@ public class RoomPresetJsonGenerator
 		AssetDatabase.Refresh();
 	}
 }
+
+#endif
