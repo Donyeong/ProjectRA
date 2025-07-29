@@ -51,14 +51,19 @@ public class VoiceChatManager : SingletonMono<VoiceChatManager>
 	// Start is called before the first frame update
 	void Start()
 	{
-		VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
-		VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemovedFromChannel;
-		var channels = VivoxService.Instance.ActiveChannels;
 	}
 
     // Update is called once per frame
     void Update()
     {
+	}
+
+	public void Initi()
+	{
+
+		VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
+		VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemovedFromChannel;
+		var channels = VivoxService.Instance.ActiveChannels;
 	}
 
 	private void OnParticipantAddedToChannel(VivoxParticipant e)

@@ -22,6 +22,7 @@ public class Intro : MonoBehaviour
 		RefDataManager.Instance.LoadRefData();
 		await VivoxService.Instance.InitializeAsync();
 		await LoginAsync();
+		VoiceChatManager.Instance.Initi();
 	}
 
 
