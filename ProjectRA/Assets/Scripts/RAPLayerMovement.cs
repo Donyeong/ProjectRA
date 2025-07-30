@@ -140,8 +140,15 @@ public class RAPLayerMovement : NetworkBehaviour
 			player.playerAnimController.SetMove(isMove);
 			player.playerAnimController.SetRun(true);
 
-
-			if (Input.GetKey(KeyCode.LeftShift))
+			bool isRun = false;
+			if(input != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
+			{
+				if(player.UseStamina(Time.deltaTime * 15))
+				{
+					isRun = true;
+				}
+			}
+			if (isRun)
 			{
 				character.maxWalkSpeed = runMoveSeped;
 			}
@@ -150,8 +157,16 @@ public class RAPLayerMovement : NetworkBehaviour
 				character.maxWalkSpeed = moveSpeed;
 			}
 			character.maxWalkSpeedCrouched = crouchedSpeed;
-
 		}
+	}
+
+	public void Knockback(Vector3 dir, float power)
+	{
+		Debug.Log(dir.normalized * power);
+
+		character.PauseGroundConstraint();
+		character.SetMovementMode(Character.MovementMode.Falling);
+		character.LaunchCharacter(dir.normalized * power, true, false);	
 	}
 
 	void RemoteSimulateTransform()

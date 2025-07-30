@@ -29,10 +29,10 @@ public class MapManager : SingletonMono<MapManager>
 	{
 		if(CGameManager.Instance.gameState == GameState.Game)
 		{
-			spawnCool += Time.deltaTime;
+			spawnCool -= Time.deltaTime;
 			if (spawnCool < 0)
 			{
-				spawnCool = Random.RandomRange(60,120);
+				spawnCool = Random.RandomRange(90,120);
 				SpawnMonster();
 			}
 		}
@@ -45,7 +45,10 @@ public class MapManager : SingletonMono<MapManager>
 		navMeshSurface.BuildNavMesh();
 		Debug.Log("MapManager Start ");
 
-		SpawnMonster();
+	/*	for (int i = 0; i < 10; i++)
+		{*/
+			SpawnMonster();
+		//}
 	}
 
 	public void Generate()

@@ -234,6 +234,9 @@ public class RANetworkManager : NetworkManager
 		// 사용 예시
 		SetLayerRecursively(localPlayer.gameObject, LayerMask.NameToLayer("LocalPlayer"));
 
+		GameRoomEvent_GenerateLocalPlayer gameRoomEvent_GenerateLocalPlayer= new GameRoomEvent_GenerateLocalPlayer();
+		CGameManager.Instance.roomEventBus.Publish(gameRoomEvent_GenerateLocalPlayer);
+
 	}
 	void SetLayerRecursively(GameObject obj, int newLayer)
 	{

@@ -34,3 +34,34 @@ public class GameRoomEvent_OnRoomSettingButtonClick : RoomEvent
 {
 }
 
+
+public class GameRoomEvent_OnPlayerDamage : RoomEvent
+{
+	public RAPlayer target;
+	public AttackInfo attackInfo;
+}
+public class GameRoomEvent_GenerateLocalPlayer : RoomEvent
+{
+}
+
+public class GameRoomEvent_OnUpdateStamina : RoomEvent
+{
+	public RAPlayer target;
+	public float delta;
+}
+
+public class GameRoomEvent_OnHealPlayer : RoomEvent
+{
+	public RAPlayer target;
+	public float delta;
+}
+
+
+public class GameRoomEvent_OnUpdateExhaustion : RoomEvent
+{
+	public RAPlayer target;
+	public bool isExhaustion;
+}
+
+
+
