@@ -25,6 +25,7 @@ public class PlayerAnimController : NetworkBehaviour
 	public void SetDead()
 	{
 		CmdSetBool("bDead", true);
+		CmdSetTrigger("tDead");
 	}
 
 	[Command]
@@ -38,5 +39,18 @@ public class PlayerAnimController : NetworkBehaviour
 	public void RpcSetBool(string key, bool state)
 	{
 		animator.SetBool(key, state);
+	}
+
+	[Command]
+	public void CmdSetTrigger(string key)
+	{
+		animator.SetTrigger(key);
+		RpcSetTrigger(key);
+	}
+
+	[ClientRpc]
+	public void RpcSetTrigger(string key)
+	{
+		animator.SetTrigger(key);
 	}
 }
