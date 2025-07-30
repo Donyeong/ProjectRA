@@ -44,10 +44,12 @@ public class MonsterStateSearch : MonsterStateBase
 				RAPlayer targetPlayer = collider.GetComponent<RAPlayer>();
 				if (targetPlayer != null)
 				{
-					owner.AddAggro(targetPlayer, 100);
-					// 플레이어가 발견되면 추적 상태로 전환
-					fsm.ChangeState<MonsterStateChase>();
-					return;
+					if (owner.IsCanView(targetPlayer)) {
+						owner.AddAggro(targetPlayer, 100);
+						// 플레이어가 발견되면 추적 상태로 전환
+						fsm.ChangeState<MonsterStateChase>();
+						return;
+					}
 				}
 			}
 			searchTimer = 0f;

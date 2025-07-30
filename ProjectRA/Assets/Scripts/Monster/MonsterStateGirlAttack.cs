@@ -46,8 +46,7 @@ public class MonsterStateGirlAttack : MonsterStateBase
 						{
 							AttackInfo attackInfo = new AttackInfo();
 							attackInfo.damage = owner.attackPower;
-							attackInfo.attacker = owner;
-							attackInfo.attackType = eAttackType.MonsterAttack;
+							attackInfo.attacker = owner;							attackInfo.attackType = eAttackType.MonsterAttack;
 							attackInfo.direction = directionToTarget + Vector3.up * owner.knockbackPowerY;
 							attackInfo.knockbackPower = owner.knockbackPower; // Knockback power 설정
 							targetPlayer.TakeDamage(attackInfo); // 데미지 처리

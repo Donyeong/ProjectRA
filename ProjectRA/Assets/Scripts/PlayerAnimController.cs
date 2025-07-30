@@ -22,6 +22,10 @@ public class PlayerAnimController : NetworkBehaviour
 	{
 		CmdSetBool("bRun", isRun);
 	}
+	public void SetDead()
+	{
+		CmdSetBool("bDead", true);
+	}
 
 	[Command]
 	public void CmdSetBool(string key, bool state)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -20,8 +21,19 @@ public class MonsterStateChase : MonsterStateBase
 			fsm.ChangeState<MonsterStateSearch>();
 			return;
 		}
-
-		owner.UpdateAggroDecrease(10 * Time.deltaTime);
+		if(!owner.IsCanView(targetPlayer))
+		{
+			if(targetPlayer.isCrouched)
+			{
+				owner.UpdateAggroDecrease(50 * Time.deltaTime);
+			} else
+			{
+				owner.UpdateAggroDecrease(15 * Time.deltaTime);
+			}
+		} else
+		{
+			owner.UpdateAggroDecrease(5 * Time.deltaTime);
+		}
 
 		if (owner.animator != null)
 		{

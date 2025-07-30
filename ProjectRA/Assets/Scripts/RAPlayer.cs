@@ -49,6 +49,12 @@ public class RAPlayer : Actor
 	public PlayerAnimController playerAnimController;
 	public RAPLayerMovement playerMovement;
 
+	public bool isCrouched {
+		get {
+			return playerMovement.character.IsCrouched();
+		}
+	}
+
 	private void Awake()
 	{
 		username = SystemInfo.deviceName;
@@ -145,12 +151,25 @@ public class RAPlayer : Actor
 	public void TakeDamage(AttackInfo attackInfo)
 	{
 		hp -= attackInfo.damage;
+		hp = Mathf.Clamp(hp, 0, maxHp);
 		GameRoomEvent_OnPlayerDamage roomEvent = new GameRoomEvent_OnPlayerDamage();
 		roomEvent.target = this;
 		roomEvent.attackInfo = attackInfo;
 		CGameManager.Instance.roomEventBus.Publish(roomEvent);
 
 		playerMovement.Knockback(attackInfo.direction, attackInfo.knockbackPower);
+
+
+		if (hp == 0)
+		{
+			currentState = ePlayerState.Dead;
+			playerAnimController.SetDead();
+			playerMovement.character.SetMovementMode(ECM2.Character.MovementMode.None);
+			playerMovement.enabled = false;
+			GameRoomEvent_OnPlayerDie gameRoomEvent_OnPlayerDie = new GameRoomEvent_OnPlayerDie();
+			gameRoomEvent_OnPlayerDie.target = this;
+			CGameManager.Instance.roomEventBus.Publish(gameRoomEvent_OnPlayerDie);
+		}
 	}
 }
 

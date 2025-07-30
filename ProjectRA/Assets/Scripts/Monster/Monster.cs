@@ -15,6 +15,7 @@ public class Monster : Actor
 	public float attackPower = 50f;
 	public float knockbackPower = 50;
 	public float knockbackPowerY = 5;
+	public float headHeight = 1f;
 
 	public MonsterFSM monsterFSM;
 
@@ -96,7 +97,7 @@ public class Monster : Actor
 
 
 
-	public void ToRotation( Vector3 target,float t)
+	public void ToRotation(Vector3 target, float t)
 	{
 		Vector3 direction = (target - transform.position).normalized;
 		direction.y = 0; // 수평면에서 회전
@@ -105,5 +106,38 @@ public class Monster : Actor
 			Quaternion lookRotation = Quaternion.LookRotation(direction);
 			transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, t);
 		}
+	}
+
+	public bool IsCanView(RAPlayer targetPlayer)
+	{
+		float eyeRange = 8f;
+		float eyeAngle = 60f;
+		if (targetPlayer.isCrouched)
+		{
+			eyeRange = 3f;
+			eyeAngle = 25f;
+		}
+		Vector3 eye = transform.position + Vector3.up * headHeight;
+		Vector3 directionToTarget = (targetPlayer.transform.position - eye).normalized;
+
+		//시야각에 들어오는지
+		Vector3 directionToTargetHorizontal = (targetPlayer.transform.position - transform.position).normalized;
+		directionToTargetHorizontal.y = 0; // 수평면에서만 비교
+		float angle = Vector3.Angle(transform.forward, directionToTargetHorizontal);
+		Debug.Log(angle);
+		if (angle < eyeAngle) // 90도 이내
+		{
+			RaycastHit hit;
+			if (Physics.Raycast(eye, directionToTarget, out hit, eyeRange, CGameManager.Instance.monsterSearchMask))
+			{
+				Debug.Log(hit.collider.name);
+				if (hit.collider.gameObject == targetPlayer.gameObject)
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }

@@ -63,5 +63,7 @@ public class GameRoomEvent_OnUpdateExhaustion : RoomEvent
 	public bool isExhaustion;
 }
 
-
-
+public class GameRoomEvent_OnPlayerDie : RoomEvent
+{
+	public RAPlayer target;
+}

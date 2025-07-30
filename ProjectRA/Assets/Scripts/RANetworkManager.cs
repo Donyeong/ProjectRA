@@ -243,6 +243,10 @@ public class RANetworkManager : NetworkManager
 		obj.layer = newLayer;
 		foreach (Transform child in obj.transform)
 		{
+			if(child.gameObject.layer == LayerMask.NameToLayer("PlayerHead"))
+			{
+				continue;
+			}
 			SetLayerRecursively(child.gameObject, newLayer);
 		}
 	}

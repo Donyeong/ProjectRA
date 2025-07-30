@@ -28,6 +28,8 @@ public class CGameManager : SingletonMono<CGameManager>
 	public EventBus<RoomEvent> roomEventBus = new EventBus<RoomEvent>();
 	public EventBus<GameEvent> gameEventBus = new EventBus<GameEvent>();
 
+	public LayerMask monsterSearchMask;
+
 
 	public void Awake()
 	{
