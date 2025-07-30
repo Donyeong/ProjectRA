@@ -20,13 +20,13 @@ public class Monster : Actor
 	void Start()
 	{
 		agent = GetComponent<NavMeshAgent>();
-		timer = wanderInterval;
-		MoveToRandomPosition();
+/*		timer = wanderInterval;
+		MoveToRandomPosition();*/
 	}
 
 	void Update()
 	{
-		timer += Time.deltaTime;
+/*		timer += Time.deltaTime;
 
 		if (animator != null)
 		{
@@ -37,6 +37,6 @@ public class Monster : Actor
 		{
 			MoveToRandomPosition();
 			timer = 0f;
-		}
+		}*/
 	}
 }

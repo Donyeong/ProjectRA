@@ -21,12 +21,12 @@ public class MonsterStateSearch : MonsterStateBase
 
 	void MoveToRandomPosition()
 	{
-		Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
+/*		Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
 		randomDirection += transform.position;
 		UnityEngine.AI.NavMeshHit hit;
 		if (UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, UnityEngine.AI.NavMesh.AllAreas))
 		{
 			agent.SetDestination(hit.position);
-		}
+		}*/
 	}
 }
