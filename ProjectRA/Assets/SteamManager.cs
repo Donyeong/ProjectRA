@@ -14,6 +14,7 @@ using UnityEngine;
 using System.Collections;
 using Steamworks;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.DebugUI;
 #endif
 
 //
@@ -27,7 +28,7 @@ public class SteamManager : MonoBehaviour
 	protected static bool s_EverInitialized = false;
 
 	protected static SteamManager s_instance;
-	protected static SteamManager Instance
+	public static SteamManager Instance
 	{
 		get
 		{
@@ -208,8 +209,12 @@ public class SteamManager : MonoBehaviour
 		GetFriendList();
 	}
 
+	public string GetSteamUserName(Steamworks.CSteamID steamID)
+	{
+		return Steamworks.SteamFriends.GetFriendPersonaName(steamID);
+	}
 
-	private List<Steamworks.CSteamID> GetFriendList()
+	public List<Steamworks.CSteamID> GetFriendList()
 	{
 
 		List<Steamworks.CSteamID> friendsList = new List<Steamworks.CSteamID>();

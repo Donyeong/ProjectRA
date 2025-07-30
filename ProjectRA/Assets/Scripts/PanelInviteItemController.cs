@@ -5,15 +5,16 @@ using UnityEngine.UI;
 using Steamworks;
 using System;
 using Mirror;
+using TMPro;
 
 public class PanelInviteItemController : MonoBehaviour
 {
 	public string PlayerName;
-	public int ConnectionID;
+	//public int ConnectionID;
 	public ulong PlayerSteamID;
 	private bool AvatarReceived;
 
-	public Text PlayerNameText;
+	public TMP_Text PlayerNameText;
 	public RawImage PlayerIcon;
 
 	[SerializeField]
@@ -21,11 +22,12 @@ public class PanelInviteItemController : MonoBehaviour
 
 	protected Callback<AvatarImageLoaded_t> ImageLoaded;
 
-	private void Start()
+	public void Init()
 	{
 		ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
 		buttonInvite.onClick.AddListener(() =>
 		{
+			Debug.Log("Invite button clicked for player: " + PlayerName + " with SteamID: " + PlayerSteamID);
 			SteamFriends.InviteUserToGame((CSteamID)PlayerSteamID, RANetworkManager.instance.relayJoinCode);
 		});
 		SetPlayerValues();

@@ -5,8 +5,7 @@ using UnityEngine.AI;
 public class Monster : Actor
 {
 	public MonsterFSM monsterFSM;
-	public float wanderRadius = 10f;
-	public float wanderInterval = 2f;
+
 
 	private NavMeshAgent agent;
 	private float timer;
@@ -38,17 +37,6 @@ public class Monster : Actor
 		{
 			MoveToRandomPosition();
 			timer = 0f;
-		}
-	}
-
-	void MoveToRandomPosition()
-	{
-		Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
-		randomDirection += transform.position;
-		NavMeshHit hit;
-		if (NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, NavMesh.AllAreas))
-		{
-			agent.SetDestination(hit.position);
 		}
 	}
 }

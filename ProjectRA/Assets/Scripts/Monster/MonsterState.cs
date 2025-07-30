@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MonsterStateBase
 {
+    public Monster owner;
+    public MonsterFSM fsm;
 	// Start is called before the first frame update
 	public virtual void Start()
     {
