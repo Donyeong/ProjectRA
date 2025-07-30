@@ -129,7 +129,8 @@ public class RAPLayerMovement : NetworkBehaviour
 			model.transform.rotation = Quaternion.LookRotation(CameraController.Instance.viewDIrXZ, Vector3.up);
 			//moveVelocity = Vector3.Lerp(moveVelocity, Vector3.zero, 0.1f);
 			player.viewDir = CameraController.Instance.viewDir;
-			head.transform.rotation = Quaternion.LookRotation(CameraController.Instance.viewDir, Vector3.up);
+			head.transform.rotation = Quaternion.Lerp(head.transform.rotation, Quaternion.LookRotation(CameraController.Instance.viewDir, Vector3.up), 20 * Time.deltaTime);
+			
 
 			targetTransform.position = transform.position;
 			targetTransform.rotation = model.transform.rotation;
@@ -176,7 +177,7 @@ public class RAPLayerMovement : NetworkBehaviour
 		player.viewDir = targetTransform.aimP;
 
 		Vector3 headDir = targetTransform.aimP;
-		head.transform.rotation = Quaternion.LookRotation(headDir, Vector3.up);
+		head.transform.rotation = Quaternion.Lerp(head.transform.rotation, Quaternion.LookRotation(headDir, Vector3.up), 20 * Time.deltaTime);
 	}
 	// 위치/회전 서버에 전송
 	[Command]
