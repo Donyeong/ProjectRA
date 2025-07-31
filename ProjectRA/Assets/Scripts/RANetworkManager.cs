@@ -2,6 +2,7 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Authentication;
@@ -38,11 +39,6 @@ public class RANetworkManager : NetworkManager
 	/// </summary>
 	public bool isLoggedIn = false;
 
-	/// <summary>
-	/// List of players currently connected to the server.
-	/// </summary>
-	private List<RAPlayer> m_Players;
-
 	private UtpTransport utpTransport;
 
 	public string relayJoinCode { get; private set; }
@@ -50,7 +46,6 @@ public class RANetworkManager : NetworkManager
 	public override void Awake()
 	{
 		base.Awake();
-		m_Players = new List<RAPlayer>();
 
 		m_Username = SystemInfo.deviceName;
 		utpTransport = transport as UtpTransport;
@@ -119,11 +114,13 @@ public class RANetworkManager : NetworkManager
 		else
 		{
 			localPlayer = null;
-			m_Players.Clear();
+			CGameManager.Instance.gameUsers.Clear();
 		}
 	}
 
-
+	/// <summary>
+	/// 서버가 실행되었을때 서버에서 실행
+	/// </summary>
 	public override void OnStartServer()
 	{
 		base.OnStopServer();
@@ -136,6 +133,10 @@ public class RANetworkManager : NetworkManager
 		NetworkServer.RegisterHandler<ResponseReady>(OnResponseReady);
 	}
 
+	/// <summary>
+	/// 신규 Player가 접속하면 Server에서 실행
+	/// </summary>
+	/// <param name="conn"></param>
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
 		base.OnServerAddPlayer(conn);
@@ -144,12 +145,19 @@ public class RANetworkManager : NetworkManager
 		{
 			RAPlayer comp = kvp.Value.GetComponent<RAPlayer>();
 
+			bool alreadyExists = CGameManager.Instance.gameUsers.Any(user => user.raplayer == comp);
 			// Add to player list if new
-			if (comp != null && !m_Players.Contains(comp))
+			if (comp != null && !alreadyExists)
 			{
-				comp.sessionId = m_SessionId;
-				m_Players.Add(comp);
+				comp.sessionId = System.Guid.NewGuid().ToString();
 
+				CGameUser gameUser = new CGameUser
+				{
+					userId = m_SessionId,
+					userName = m_SessionId,
+					raplayer = comp
+				};
+				CGameManager.Instance.gameUsers.Add(gameUser);
 			}
 		}
 	}
@@ -168,7 +176,7 @@ public class RANetworkManager : NetworkManager
 		Dictionary<uint, NetworkIdentity> spawnedPlayers = NetworkServer.spawned;
 
 		// Update players list on client disconnect
-		foreach (RAPlayer player in m_Players)
+		foreach (CGameUser user in CGameManager.Instance.gameUsers)
 		{
 			bool playerFound = false;
 
@@ -177,7 +185,7 @@ public class RANetworkManager : NetworkManager
 				RAPlayer comp = kvp.Value.GetComponent<RAPlayer>();
 
 				// Verify the player is still in the match
-				if (comp != null && player == comp)
+				if (comp != null && user.raplayer == comp)
 				{
 					playerFound = true;
 					break;
@@ -186,7 +194,7 @@ public class RANetworkManager : NetworkManager
 
 			if (!playerFound)
 			{
-				m_Players.Remove(player);
+				CGameManager.Instance.gameUsers.Remove(user);
 				break;
 			}
 		}
@@ -269,11 +277,11 @@ public class RANetworkManager : NetworkManager
 	{
 	}
 
-	public void BroadcastMessage(NetworkMessage message)
+	public void BroadcastMessage<T>(T message) where T : struct, NetworkMessage
 	{
 		foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
 		{
-			connection.Send(message);
+			connection.Send<T>(message);
 		}
 	}
 }

@@ -342,7 +342,6 @@ public class MapGenerator : SingletonMono<MapGenerator>
 	public void GenerateRooms()
 	{
 		generator.GenerateRooms(mapId, mapSize);
-		GenerateRoomObject();
 	}
 
 	public void GenerateRoomObject()

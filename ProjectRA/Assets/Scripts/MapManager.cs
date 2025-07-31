@@ -5,7 +5,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class MapManager : SingletonMono<MapManager>
+public class MapManager : SingletonNetworkBehaviour<MapManager>
 {
 	public GameObject lobbyMap;
 	public MapGenerator mapGenerator;
@@ -40,15 +40,23 @@ public class MapManager : SingletonMono<MapManager>
 
 	public void GameMapStart(GameRoomEvent_OnStartButtonClick e)
 	{
+		CmdGameMapStart();
+	}
+
+	[Command]
+	public void CmdGameMapStart()
+	{
 		Generate();
+		SpawnMonster();
+		RpcGameMapStart();
+	}
+
+	[ClientRpc]
+	public void RpcGameMapStart()
+	{
 		lobbyMap.SetActive(false);
 		navMeshSurface.BuildNavMesh();
-		Debug.Log("MapManager Start ");
-
-	/*	for (int i = 0; i < 10; i++)
-		{*/
-			SpawnMonster();
-		//}
+		mapGenerator.GenerateRoomObject();
 	}
 
 	public void Generate()
@@ -66,9 +74,10 @@ public class MapManager : SingletonMono<MapManager>
 			
 		}
 
-		RANetworkManager.instance.localPlayer.transform.position = Vector3.zero;
-
-
+		foreach(CGameUser user in CGameManager.Instance.gameUsers)
+		{
+			user.raplayer.transform.position = Vector3.zero;
+		}
 
 		GameObject cart = ResourceManager.Instance.LoadResource<GameObject>("Props/Cart");
 		SpawnItem(cart, Vector3.up + Vector3.right);

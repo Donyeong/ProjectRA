@@ -13,6 +13,7 @@ public enum GameState
 
 public class CGameUser
 {
+	public RAPlayer raplayer;
 	public string userId;
 	public string userName;
 	public bool joinedVoice = false;
@@ -30,6 +31,8 @@ public class CGameManager : SingletonMono<CGameManager>
 	public EventBus<GameEvent> gameEventBus = new EventBus<GameEvent>();
 
 	public LayerMask monsterSearchMask;
+
+	public List<CGameUser> gameUsers = new List<CGameUser>();
 
 
 	public void Awake()
