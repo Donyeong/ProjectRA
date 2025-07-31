@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,5 +40,10 @@ public class CGameManager : SingletonMono<CGameManager>
 	public void OnRoomCreated(GameRoomEvent_RoomCreated e)
 	{
 		//mapManager.Generate();
+	}
+
+	
+	public void CmdPublishRoomEvent(RoomEvent e)
+	{
 	}
 }

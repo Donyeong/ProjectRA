@@ -1,4 +1,4 @@
-// UnityEditor 네임스페이스 필요
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -27,3 +27,4 @@ public class MonsterViewer : EditorWindow
 		}
 	}
 }
+#endif

@@ -15,7 +15,7 @@ public class RANetworkManager : NetworkManager
 	public TMP_Text textRoomCode;
 	public static RANetworkManager _instance;
 	public static RANetworkManager instance
-		{
+	{
 		get
 		{
 			if (_instance == null)
@@ -132,6 +132,8 @@ public class RANetworkManager : NetworkManager
 		m_SessionId = System.Guid.NewGuid().ToString();
 
 		CGameManager.Instance.roomEventBus.Publish(new GameRoomEvent_RoomCreated());
+
+		NetworkServer.RegisterHandler<ResponseReady>(OnResponseReady);
 	}
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -147,7 +149,7 @@ public class RANetworkManager : NetworkManager
 			{
 				comp.sessionId = m_SessionId;
 				m_Players.Add(comp);
-				
+
 			}
 		}
 	}
@@ -234,7 +236,7 @@ public class RANetworkManager : NetworkManager
 		// 사용 예시
 		SetLayerRecursively(localPlayer.gameObject, LayerMask.NameToLayer("LocalPlayer"));
 
-		GameRoomEvent_GenerateLocalPlayer gameRoomEvent_GenerateLocalPlayer= new GameRoomEvent_GenerateLocalPlayer();
+		GameRoomEvent_GenerateLocalPlayer gameRoomEvent_GenerateLocalPlayer = new GameRoomEvent_GenerateLocalPlayer();
 		CGameManager.Instance.roomEventBus.Publish(gameRoomEvent_GenerateLocalPlayer);
 
 	}
@@ -243,7 +245,7 @@ public class RANetworkManager : NetworkManager
 		obj.layer = newLayer;
 		foreach (Transform child in obj.transform)
 		{
-			if(child.gameObject.layer == LayerMask.NameToLayer("PlayerHead"))
+			if (child.gameObject.layer == LayerMask.NameToLayer("PlayerHead"))
 			{
 				continue;
 			}
@@ -251,4 +253,34 @@ public class RANetworkManager : NetworkManager
 		}
 	}
 
+
+
+	public override void OnStartClient()
+	{
+		base.OnStartClient();
+
+		NetworkClient.RegisterHandler<ResponseSetupInfo>(OnResponseSetupInfo);
+
+	}
+	private void OnResponseSetupInfo(ResponseSetupInfo message)
+	{
+	}
+	private void OnResponseReady(NetworkConnectionToClient networkConnectionToClient, ResponseReady message)
+	{
+	}
+
+	public void BroadcastMessage(NetworkMessage message)
+	{
+		foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
+		{
+			connection.Send(message);
+		}
+	}
+}
+
+public struct ResponseSetupInfo : NetworkMessage
+{
+}
+public struct ResponseReady : NetworkMessage
+{
 }
