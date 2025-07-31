@@ -32,7 +32,7 @@ namespace JENKINS
 
 
 			var _SCENES = FindEnabledEditorScenes();
-			var buildFolder = "build/DedicatedServer.exe";// GetArg("-buildFolder");
+			var buildFolder = GetArg("-buildFolder");// ;
 			GenericBuild_Dedicated(_SCENES, buildFolder);
 
 			PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, oldDefines);
@@ -51,7 +51,7 @@ namespace JENKINS
 			buildPlayerOptions.locationPathName = app_target;
 			buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
 			buildPlayerOptions.targetGroup = BuildTargetGroup.Standalone;
-			buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Server;
+			buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
 
 			buildPlayerOptions.extraScriptingDefines = new string[] { "ENABLE_PLAYFABSERVER_API", "UNITY_SERVER" };
 			buildPlayerOptions.options = BuildOptions.Development;
@@ -61,25 +61,25 @@ namespace JENKINS
 			var summary = report.summary;
 			if (summary.result == BuildResult.Succeeded)
 			{
-				Debug.Log("**** Succeeded!");
+				Debug.Log("[BuildResult] Succeeded!");
 			}
 			else if (summary.result == BuildResult.Failed)
 			{
-				Debug.Log("**** Failed!"); foreach (var step in report.steps)
+				Debug.Log("[BuildResult] Failed"); foreach (var step in report.steps)
 				{
 					foreach (var message in step.messages)
 					{
-						Debug.Log("****" + message.content);
+						Debug.Log("[BuildResult Message]" + message.content);
 					}
 				}
 			}
 			else if (summary.result == BuildResult.Cancelled)
 			{
-				Debug.Log("**** Cancelled!");
+				Debug.Log("[BuildResult] Cancelled!");
 			}
 			else
 			{ // Unknown           
-				Debug.Log("**** Unknown!");
+				Debug.Log("[BuildResult] Unknown!");
 			}
 		}
 
