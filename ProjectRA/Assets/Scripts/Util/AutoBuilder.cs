@@ -33,12 +33,12 @@ namespace JENKINS
 
 			var _SCENES = FindEnabledEditorScenes();
 			var buildFolder = GetArg("-buildFolder");// ;
-			GenericBuild_Dedicated(_SCENES, buildFolder);
+			GenericBuild(_SCENES, buildFolder);
 
 			PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, oldDefines);
 		}
 
-		private static void GenericBuild_Dedicated(string[] scenes, string app_target)
+		private static void GenericBuild(string[] scenes, string app_target)
 		{
 			var group = BuildTargetGroup.Standalone;
 			if (PlayerSettings.GetScriptingBackend(group) != ScriptingImplementation.Mono2x)
@@ -52,8 +52,6 @@ namespace JENKINS
 			buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
 			buildPlayerOptions.targetGroup = BuildTargetGroup.Standalone;
 			buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
-
-			buildPlayerOptions.extraScriptingDefines = new string[] { "ENABLE_PLAYFABSERVER_API", "UNITY_SERVER" };
 			buildPlayerOptions.options = BuildOptions.Development;
 
 			var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -80,6 +78,18 @@ namespace JENKINS
 			else
 			{ // Unknown           
 				Debug.Log("[BuildResult] Unknown!");
+			}
+
+			//resultLogPath에 빌드 결과를 저장합니다.
+			var resultLogPath = GetArg("-result_log_path");
+			if (!string.IsNullOrEmpty(resultLogPath))
+			{
+				System.IO.File.WriteAllText(resultLogPath, report.ToString());
+				Debug.Log("Build result log saved to: " + resultLogPath);
+			}
+			else
+			{
+				Debug.LogWarning("No result log path specified. Build result log not saved.");
 			}
 		}
 
