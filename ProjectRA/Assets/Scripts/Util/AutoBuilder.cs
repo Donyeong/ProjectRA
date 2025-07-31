@@ -67,7 +67,18 @@ namespace JENKINS
 				{
 					foreach (var message in step.messages)
 					{
-						Debug.Log("[BuildResult Message]" + message.content);
+						if (message.type == LogType.Error)
+						{
+							Debug.Log($"[BuildResult Error] {message.content}");
+						}
+						if (message.type == LogType.Exception)
+						{
+							Debug.Log($"[BuildResult Exception] {message.content}");
+						}
+					}
+					foreach (var message in step.messages)
+					{
+						Debug.Log($"[BuildResult {message.type}] {message.content}");
 					}
 				}
 			}
