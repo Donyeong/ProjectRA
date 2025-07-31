@@ -1,5 +1,7 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -56,47 +58,56 @@ namespace JENKINS
 
 			var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
+			StringBuilder resSB = new StringBuilder();
+
 			var summary = report.summary;
 			if (summary.result == BuildResult.Succeeded)
 			{
-				Debug.Log("[BuildResult] Succeeded!");
+				resSB.Append("[BuildResult] Succeeded!\n");
 			}
 			else if (summary.result == BuildResult.Failed)
 			{
-				Debug.Log("[BuildResult] Failed"); foreach (var step in report.steps)
+				resSB.Append("[BuildResult] Failed!\n");
+				foreach (var step in report.steps)
 				{
 					foreach (var message in step.messages)
 					{
 						if (message.type == LogType.Error)
 						{
-							Debug.Log($"[BuildResult Error] {message.content}");
+							resSB.Append($"[BuildResult Error][{step.name}] {message.content}\n");
 						}
 						if (message.type == LogType.Exception)
 						{
-							Debug.Log($"[BuildResult Exception] {message.content}");
+							resSB.Append($"[BuildResult Exception][{step.name}] {message.content}\n");
 						}
 					}
 					foreach (var message in step.messages)
 					{
-						Debug.Log($"[BuildResult {message.type}] {message.content}");
+						if (message.type == LogType.Error || message.type == LogType.Exception)
+						{
+							continue;
+						}
+						resSB.Append($"[BuildResult {message.type}][{step.name}] {message.content}\n");
 					}
 				}
 			}
 			else if (summary.result == BuildResult.Cancelled)
 			{
-				Debug.Log("[BuildResult] Cancelled!");
+				resSB.Append("[BuildResult] Cancelled!\n");
 			}
 			else
 			{ // Unknown           
-				Debug.Log("[BuildResult] Unknown!");
+				resSB.Append("[BuildResult] Unknown!\n");
 			}
+
+			Debug.Log(resSB.ToString());
 
 			//resultLogPath에 빌드 결과를 저장합니다.
 			var resultLogPath = GetArg("-result_log_path");
 			if (!string.IsNullOrEmpty(resultLogPath))
 			{
-				System.IO.File.WriteAllText(resultLogPath, report.ToString());
 				Debug.Log("Build result log saved to: " + resultLogPath);
+				System.IO.File.WriteAllText(resultLogPath, resSB.ToString());
 			}
 			else
 			{
@@ -132,3 +143,5 @@ namespace JENKINS
 		}
 	}
 }
+
+#endif
