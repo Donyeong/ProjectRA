@@ -163,7 +163,7 @@ public class RAPLayerMovement : NetworkBehaviour
 
 	public void Knockback(Vector3 dir, float power)
 	{
-		Debug.Log(dir.normalized * power);
+		//Debug.Log(dir.normalized * power);
 
 		character.PauseGroundConstraint();
 		character.SetMovementMode(Character.MovementMode.Falling);

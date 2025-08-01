@@ -27,13 +27,16 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 
 	public void Update()
 	{
-		if(CGameManager.Instance.gameState == GameState.Game)
+		if (isServer)
 		{
-			spawnCool -= Time.deltaTime;
-			if (spawnCool < 0)
+			if (CGameManager.Instance.gameState == GameState.Game)
 			{
-				spawnCool = Random.RandomRange(90,120);
-				SpawnMonster();
+				spawnCool -= Time.deltaTime;
+				if (spawnCool < 0)
+				{
+					spawnCool = Random.RandomRange(90, 120);
+					SpawnMonster();
+				}
 			}
 		}
 	}
