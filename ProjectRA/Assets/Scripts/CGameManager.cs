@@ -37,6 +37,7 @@ public class CGameManager : SingletonMono<CGameManager>
 
 	public void Awake()
 	{
+		base.Awake();
 		roomEventBus.AddListner<GameRoomEvent_RoomCreated>(OnRoomCreated);
 	}
 

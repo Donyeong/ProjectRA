@@ -26,14 +26,16 @@ public class MonsterStateSearch : MonsterStateBase
 		{
 			owner.animator.SetBool("param_idletowalk", true);
 		}
-
-		if (!owner.agent.pathPending && owner.agent.remainingDistance < 0.5f && timer >= wanderInterval)
+		if (owner.agent.enabled && owner.agent.isOnNavMesh)
 		{
-			MoveToRandomPosition();
-			timer = 0f;
+			if (!owner.agent.pathPending && owner.agent.remainingDistance < 0.5f && timer >= wanderInterval)
+			{
+				MoveToRandomPosition();
+				timer = 0f;
+			}
 		}
 
-		searchTimer+= Time.deltaTime;
+		searchTimer += Time.deltaTime;
 
 		if (searchTimer >= searchInterval)
 		{

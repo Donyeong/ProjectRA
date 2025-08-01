@@ -31,6 +31,8 @@ public class SingletonMono<T> : MonoBehaviour where T : Component
 
     public bool IsDontDestroy = false;
 
+	public static bool isInitInstance => m_instance != null;
+
     public static T Instance
     {
         get

@@ -40,23 +40,20 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 
 	public void GameMapStart(GameRoomEvent_OnStartButtonClick e)
 	{
-		CmdGameMapStart();
-	}
-
-	[Command]
-	public void CmdGameMapStart()
-	{
+		Debug.Log("CmdGameMapStart");
 		Generate();
 		SpawnMonster();
-		RpcGameMapStart();
+		RpcGameMapStart(mapGenerator.generator.rooms);
 	}
 
 	[ClientRpc]
-	public void RpcGameMapStart()
+	public void RpcGameMapStart(List<RoomInfo> roomInfos)
 	{
+		Debug.Log("RpcGameMapStart");
+		mapGenerator.generator.rooms = roomInfos;
 		lobbyMap.SetActive(false);
-		navMeshSurface.BuildNavMesh();
 		mapGenerator.GenerateRoomObject();
+		navMeshSurface.BuildNavMesh();
 	}
 
 	public void Generate()

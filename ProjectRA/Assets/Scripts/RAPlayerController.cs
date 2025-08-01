@@ -221,7 +221,13 @@ namespace RA {
 
 			if(isOnAimInteractable && Input.GetKeyDown(KeyCode.E))
 			{
-				interactableObject.OnInteract();
+				// interactableObject의 NetworkIdentity에서 netId를 얻어서 넘김
+				var netIdentity = interactableObject.GetComponent<NetworkIdentity>();
+				if (netIdentity != null)
+				{
+					CmdInteractObject(netIdentity.netId);
+				}
+				//interactableObject.OnInteract();
 			}
 
 			if(isOnAimProp && Input.GetKeyDown(KeyCode.Mouse0) && !isGrabbed)
@@ -336,6 +342,16 @@ namespace RA {
 			{
 				grabedProp = propIdentity.GetComponent<RAProp>();
 				m_grabPointLocal = _grabPointLocal;
+			}
+		}
+		[Command]
+		public void CmdInteractObject(uint objectNetId)
+		{
+			if (NetworkServer.spawned.TryGetValue(objectNetId, out NetworkIdentity objId))
+			{
+				InteractableObject obj = objId.GetComponent<InteractableObject>();
+				if (obj != null)
+					obj.OnInteract();
 			}
 		}
 

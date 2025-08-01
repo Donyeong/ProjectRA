@@ -43,6 +43,7 @@ public class RoomPresetInfo
 	public List<PropSpawnerInfo> spawner = new List<PropSpawnerInfo>();
 }
 
+[Serializable]
 public class RoomInfo : RoomPresetInfo
 {
 	public Vector3 position;
@@ -329,7 +330,7 @@ public class JsonLoader
 }
 public class MapGenerator : SingletonMono<MapGenerator>
 {
-	public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
+	//public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
 	public RoomGenerator generator = new RoomGenerator();
 	public int mapId = 1;
 	public int mapSize = 50;

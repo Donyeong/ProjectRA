@@ -114,7 +114,10 @@ public class RANetworkManager : NetworkManager
 		else
 		{
 			localPlayer = null;
-			CGameManager.Instance.gameUsers.Clear();
+			if (CGameManager.isInitInstance)
+			{
+				CGameManager.Instance.gameUsers.Clear();
+			}
 		}
 	}
 

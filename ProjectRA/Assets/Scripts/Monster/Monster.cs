@@ -124,13 +124,13 @@ public class Monster : Actor
 		Vector3 directionToTargetHorizontal = (targetPlayer.transform.position - transform.position).normalized;
 		directionToTargetHorizontal.y = 0; // 수평면에서만 비교
 		float angle = Vector3.Angle(transform.forward, directionToTargetHorizontal);
-		Debug.Log(angle);
+		//Debug.Log(angle);
 		if (angle < eyeAngle) // 90도 이내
 		{
 			RaycastHit hit;
 			if (Physics.Raycast(eye, directionToTarget, out hit, eyeRange, CGameManager.Instance.monsterSearchMask))
 			{
-				Debug.Log(hit.collider.name);
+				//Debug.Log(hit.collider.name);
 				if (hit.collider.gameObject == targetPlayer.gameObject)
 				{
 					return true;
