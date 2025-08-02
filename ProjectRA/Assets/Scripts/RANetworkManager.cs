@@ -44,7 +44,9 @@ public class RANetworkManager : NetworkManager
 
 	public string relayJoinCode { get; private set; }
 
-	public PacketHandler packetHandler = new PacketHandler();
+	public PacketHandler packetHandler_s2c = new PacketHandler(); // server => client
+
+	public Dictionary<NetworkConnectionToClient, PacketHandler> packetHandler_c2s = new Dictionary<NetworkConnectionToClient, PacketHandler>(); // Client => Server
 
 	public override void Awake()
 	{
@@ -136,7 +138,8 @@ public class RANetworkManager : NetworkManager
 
 		CGameManager.Instance.roomEventBus.Publish(new GameRoomEvent_RoomCreated());
 
-		NetworkServer.RegisterHandler<GamePacket>(OnResponseReady);
+		NetworkServer.RegisterHandler<GamePacket>(OnReceivedC2S);
+
 	}
 
 	/// <summary>
@@ -275,15 +278,24 @@ public class RANetworkManager : NetworkManager
 		base.OnStartClient();
 
 		NetworkClient.RegisterHandler<ResponseSetupInfo>(OnResponseSetupInfo);
-		NetworkClient.RegisterHandler<GamePacket>(OnReceivedPacket);
+		NetworkClient.RegisterHandler<GamePacket>(OnReceivedPacketS2C);
 
 	}
 	private void OnResponseSetupInfo(ResponseSetupInfo message)
 	{
 	}
-	private void OnResponseReady(NetworkConnectionToClient networkConnectionToClient, GamePacket message)
+	private void OnReceivedC2S(NetworkConnectionToClient networkConnectionToClient, GamePacket gamePacket)
 	{
-
+		if (gamePacket.data == null || gamePacket.data.Length == 0)
+		{
+			Debug.LogWarning("Received empty packet data.");
+			return;
+		}
+		if(!packetHandler_c2s.ContainsKey(networkConnectionToClient))
+		{
+			packetHandler_c2s.Add(networkConnectionToClient, new PacketHandler());
+		}
+		packetHandler_c2s[networkConnectionToClient].HandlePacket(gamePacket);
 	}
 
 	public void BroadcastMessage<T>(T message) where T : PacketBase
@@ -292,6 +304,41 @@ public class RANetworkManager : NetworkManager
 		{
 			//connection.Send<T>(message);
 			SendPacketToClient<T>(connection, message);
+		}
+	}
+
+	public void SendPacketToServer<T>(T packet) where T : PacketBase
+	{
+		Debug.Log("SendPacketToServer");
+
+		byte[] data = SerializeUtil.SerializeToBytes<T>(packet);
+
+		//512 바이트씩 쪼개서 보낸다
+		int totalSize = data.Length;
+		int currentByteIndex = 0;
+		while (currentByteIndex < totalSize)
+		{
+			Debug.Log("SendPacketToClient" + currentByteIndex);
+			int currentByteSize = Mathf.Min(512, totalSize - currentByteIndex);
+			byte[] packetData = new byte[currentByteSize];
+			Array.Copy(data, currentByteIndex, packetData, 0, currentByteSize);
+
+			GamePacket gamePacket = new GamePacket
+			{
+				packetType = packet.GetPacketType(),
+				totalSize = totalSize,
+				currentByteIndex = currentByteIndex,
+				currentByteSize = currentByteSize,
+				data = packetData
+			};
+			Debug.Log(gamePacket.packetType + " " + gamePacket.currentByteIndex + " " + gamePacket.currentByteSize + " " + gamePacket.totalSize);
+
+			if (gamePacket.data == null)
+			{
+				Debug.LogError("GamePacket data is null.");
+			}
+			NetworkClient.Send(gamePacket);
+			currentByteIndex += currentByteSize;
 		}
 	}
 
@@ -336,19 +383,19 @@ public class RANetworkManager : NetworkManager
 		}
 	}
 
-	public void OnReceivedPacket(GamePacket gamePacket)
+	public void OnReceivedPacketS2C(GamePacket gamePacket)
 	{
 		if (gamePacket.data == null || gamePacket.data.Length == 0)
 		{
 			Debug.LogWarning("Received empty packet data.");
 			return;
 		}
-		if(packetHandler == null)
+		if(packetHandler_s2c == null)
 		{
 			Debug.LogError("PacketHandler is null.");
 			return;
 		}
-		packetHandler.HandlePacket(gamePacket);
+		packetHandler_s2c.HandlePacket(gamePacket);
 	}
 }
 

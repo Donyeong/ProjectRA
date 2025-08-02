@@ -44,7 +44,9 @@ public class CGameManager : SingletonMono<CGameManager>
 
 	public int goalPrice = 0;
 
-		
+	public RoomOption roomOption = new RoomOption();
+
+
 	public void Awake()
 	{
 		base.Awake();

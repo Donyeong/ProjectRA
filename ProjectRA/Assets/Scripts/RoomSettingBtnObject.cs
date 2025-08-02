@@ -19,6 +19,8 @@ public class RoomSettingBtnObject : InteractableObject
 	{
 		base.OnInteract();
 		CGameManager.Instance.roomEventBus.Publish(new GameRoomEvent_OnRoomSettingButtonClick());
+		UIPanelRoomOption uIPanelRoomOption = UIPanelManager.Instance.GetPanel<UIPanelRoomOption>();
+		UIPanelManager.Instance.ShowPanel(uIPanelRoomOption);
 	}
 	public override string GetInteractText()
 	{

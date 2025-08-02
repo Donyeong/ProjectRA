@@ -8,6 +8,7 @@ using static RANetworkManager;
 public enum ePacketType
 {
 	GaemStartNotify,
+	RoomOptionChangeReq,
 	None
 }
 public class PacketHandler
@@ -41,6 +42,9 @@ public class PacketHandler
 		{
 			case ePacketType.GaemStartNotify:
 				HandleCompletePacket<Packet_GaemStartNotify>(buffer);
+				break;
+			case ePacketType.RoomOptionChangeReq:
+				HandleCompletePacket<Packet_RoomOptionChangeReq>(buffer);
 				break;
 			default:
 				Debug.LogWarning($"Unhandled packet type: {packetType}");

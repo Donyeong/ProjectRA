@@ -333,7 +333,6 @@ public class MapGenerator : SingletonMono<MapGenerator>
 	//public List<GameObject> RoomPresetPrefabs = new List<GameObject>();
 	public RoomGenerator generator = new RoomGenerator();
 	public int mapId = 1;
-	public int mapSize = 50;
 
 	void Start()
 	{
@@ -342,7 +341,7 @@ public class MapGenerator : SingletonMono<MapGenerator>
 
 	public void GenerateRooms()
 	{
-		generator.GenerateRooms(mapId, mapSize);
+		generator.GenerateRooms(mapId, CGameManager.Instance.roomOption.mapSize);
 	}
 
 	public void GenerateRoomObject()
