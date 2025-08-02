@@ -79,21 +79,3 @@ public class PacketBase
 	}
 }
 
-[Serializable]
-public class Packet_GaemStartNotify : PacketBase
-{
-	public List<RoomInfo> roomInfo;
-	public override ePacketType GetPacketType()
-	{
-		return ePacketType.GaemStartNotify;
-	}
-	public override void OnReceived()
-	{
-		Debug.Log(GetPacketType() + " received.");
-		MapManager.Instance.GameMapStart(roomInfo);
-	}
-	public Packet_GaemStartNotify(List<RoomInfo> roomInfo)
-	{
-		this.roomInfo = roomInfo;
-	}
-}

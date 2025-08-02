@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIPanelIngameHud : MonoBehaviour
 {
@@ -18,6 +19,11 @@ public class UIPanelIngameHud : MonoBehaviour
 	public Color staminaNormal;
 	public Color staminaExhausted;
 
+	public GameObject playerListHud;
+	public GameObject roleHud;
+	public Image roleImage;
+	public TMP_Text roleText;
+		
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -34,6 +40,9 @@ public class UIPanelIngameHud : MonoBehaviour
 		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnUpdateStamina>(OnUpdateStamina);
 		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnUpdateExhaustion>(OnUpdateExhaustion);
 		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnPlayerDamage>(OnPlayerDamage);
+
+		CGameManager.Instance.roomEventBus.AddListner<GameRoomEvent_OnStartGame>(OnGameStart);
+
 	}
 
 	// Update is called once per frame
@@ -41,6 +50,36 @@ public class UIPanelIngameHud : MonoBehaviour
     {
         
     }
+
+	public void OnGameStart(GameRoomEvent_OnStartGame e)
+	{
+		roleHud.SetActive(true);
+		SetRoleUI();
+		SetPriceText(0);
+		playerListHud.SetActive(false);
+	}
+
+	public void SetRoleUI()
+	{
+		eRoleType roleType = CGameManager.Instance.localPlayer.roleType;
+		roleImage.sprite = ResourceManager.Instance.LoadResource<Sprite>($"UI/RoleImage/{roleType.ToString()}");
+		string roleName = "";
+		switch(roleType)
+		{
+			case eRoleType.Citizen:
+				roleName = "시민";
+				break;
+			case eRoleType.Bumin:
+				roleName = "범인";
+				break;
+			case eRoleType.None:
+			default:
+				roleName = "알 수 없음";
+				break;
+		}
+		roleText.SetText(roleName);
+	}
+
 	public void OnGenerateLocalPlayer(GameRoomEvent_GenerateLocalPlayer e)
 	{
 		UpdateHpText(CGameManager.Instance.localPlayer);
@@ -49,7 +88,12 @@ public class UIPanelIngameHud : MonoBehaviour
 
     public void OnSellPlaceUpdate(GameRoomEvent_SellPlaceUpdate e)
 	{
-        price.SetText(e.sellPlace.GetTotalPrice().ToString());
+		SetPriceText(e.sellPlace.GetTotalPrice());
+	}
+
+	public void SetPriceText(int currentPrice)
+	{
+		price.SetText($"{currentPrice.ToString()} / {CGameManager.Instance.goalPrice}");
 	}
 
 	public void OnInteractAimIn(GameRoomEvent_OnInteractAimIn e)

@@ -9,6 +9,13 @@ public enum ePlayerState
 	FallDown,
 	Dead,
 }
+
+public enum eRoleType
+{
+	Bumin,
+	Citizen,
+	None,
+}
 public class RAPlayer : Actor
 {
 	public Transform camera_position;
@@ -49,6 +56,9 @@ public class RAPlayer : Actor
 	public PlayerAnimController playerAnimController;
 	public RAPlayerMovement playerMovement;
 
+	[SyncVar]
+	public eRoleType roleType = eRoleType.None;
+
 	public bool isCrouched {
 		get {
 			return playerMovement.character.IsCrouched();
@@ -68,6 +78,21 @@ public class RAPlayer : Actor
 
 	private void Start()
 	{
+		if (isLocalPlayer)
+		{
+			// 하위에 있는 메쉬들 전부 ShadowOnly로 변경
+			MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+			foreach (MeshRenderer renderer in renderers)
+			{
+				renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+			}
+
+			SkinnedMeshRenderer[] skinnedRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+			foreach (SkinnedMeshRenderer skinnedRenderer in skinnedRenderers)
+			{
+				skinnedRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+			}
+		}
 	}
 
 	public void Update()

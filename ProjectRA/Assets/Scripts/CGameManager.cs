@@ -34,6 +34,8 @@ public class CGameManager : SingletonMono<CGameManager>
 
 	public List<CGameUser> gameUsers = new List<CGameUser>();
 
+	public int goalPrice = 0;
+
 
 	public void Awake()
 	{
@@ -44,10 +46,5 @@ public class CGameManager : SingletonMono<CGameManager>
 	public void OnRoomCreated(GameRoomEvent_RoomCreated e)
 	{
 		//mapManager.Generate();
-	}
-
-	
-	public void CmdPublishRoomEvent(RoomEvent e)
-	{
 	}
 }

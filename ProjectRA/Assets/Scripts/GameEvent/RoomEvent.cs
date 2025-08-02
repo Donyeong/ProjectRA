@@ -68,3 +68,8 @@ public class GameRoomEvent_OnPlayerDie : RoomEvent
 {
 	public RAPlayer target;
 }
+
+
+public class GameRoomEvent_OnStartGame : RoomEvent
+{
+}
