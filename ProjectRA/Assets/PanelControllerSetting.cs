@@ -38,12 +38,16 @@ public class PanelControllerSetting : SettingUIBase
 			{
 				var slot = Instantiate(slotOrigin, slotOrigin.transform.parent);
 				var slotComponent = slot.GetComponent<UIKeySettingSLot>();
-				slotComponent.Setup();
-				slotComponent.icon.sprite = RAInputManager.Instance.GetIcon(inputInfo.keyCode);
-				slotComponent.keyType.text = key.Key.ToString();
+				slotComponent.Setup(inputInfo);
 				keySettingSlots.Add(slotComponent);
 				slot.SetActive(true);
+				slotComponent.button.onClick.AddListener(() => OnSlotClick(inputInfo));
 			}
 		}
+	}
+
+	public void OnSlotClick(InputInfo inputInfo)
+	{
+
 	}
 }

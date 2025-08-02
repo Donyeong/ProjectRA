@@ -14,6 +14,7 @@ public class DungeonManager : SingletonMono<DungeonManager>
 	public void OnStart(GameRoomEvent_OnStartButtonClick e)
 	{
 		SetRole();
+		CGameManager.Instance.goalPrice = Random.Range(7000, 14000);
 		MapManager.Instance.GameMapStart(e);
 		CGameManager.Instance.localPlayer.playerMovement.Warp(Vector3.zero);
 

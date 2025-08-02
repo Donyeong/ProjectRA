@@ -78,7 +78,7 @@ public class RAInputManager : SingletonMono<RAInputManager>
 		keySetting.Add(eInputContentType.Grab, new InputInfo {
 			inputType = eInputType.Button,
 			inputContentType = eInputContentType.Grab,
-			keyCode = KeyCode.F
+			keyCode = KeyCode.Mouse0
 		});
 
 
@@ -115,6 +115,22 @@ public class RAInputManager : SingletonMono<RAInputManager>
 		else if (keyCode == KeyCode.LeftControl || keyCode == KeyCode.RightControl)
 		{
 			iconName = "keyboard_ctrl";
+		}
+		else if (keyCode == KeyCode.LeftShift || keyCode == KeyCode.RightShift)
+		{
+			iconName = "keyboard_shift";
+		}
+		else if (keyCode == KeyCode.LeftAlt || keyCode == KeyCode.RightAlt)
+		{
+			iconName = "keyboard_alt";
+		}
+		else if (keyCode == KeyCode.Mouse0)
+		{
+			iconName = "mouse_left";
+		}
+		else if (keyCode == KeyCode.Mouse1)
+		{
+			iconName = "mouse_right";
 		}
 		else if (keyCode == KeyCode.Return || keyCode == KeyCode.KeypadEnter)
 		{

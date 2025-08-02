@@ -52,6 +52,7 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 		//byte[] d = SerializeUtil.SerializeToBytes(mapGenerator.generator.rooms);
 
 		Packet_GaemStartNotify packet_GaemStartNotify = new Packet_GaemStartNotify(mapGenerator.generator.rooms);
+		packet_GaemStartNotify.goalPrice = CGameManager.Instance.goalPrice;
 		RANetworkManager.instance.BroadcastMessage(packet_GaemStartNotify);
 		//RpcGameMapStart();
 	}
