@@ -45,22 +45,25 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 	{
 		Debug.Log("CmdGameMapStart");
 		Generate();
-		mapGenerator.GenerateRoomObject();
-		lobbyMap.SetActive(false);
+		/*mapGenerator.GenerateRoomObject();
+		lobbyMap.SetActive(false);*/
 		//SpawnMonster();
-		RpcGameMapStart(mapGenerator.generator.rooms);
+
+		//byte[] d = SerializeUtil.SerializeToBytes(mapGenerator.generator.rooms);
+
+		Packet_GaemStartNotify packet_GaemStartNotify = new Packet_GaemStartNotify(mapGenerator.generator.rooms);
+		RANetworkManager.instance.BroadcastMessage(packet_GaemStartNotify);
+		//RpcGameMapStart();
 	}
 
-	[ClientRpc]
-	public void RpcGameMapStart(List<RoomInfo> roomInfos)
+	public void GameMapStart(List<RoomInfo> roomInfos)
 	{
-		Debug.Log("RpcGameMapStart");
 		mapGenerator.generator.rooms = roomInfos;
-		if (!isServer)
-		{
+	/*	if (!isServer)
+		{*/
 			lobbyMap.SetActive(false);
 			mapGenerator.GenerateRoomObject();
-		}
+		//}
 		navMeshSurface.BuildNavMesh();
 	}
 

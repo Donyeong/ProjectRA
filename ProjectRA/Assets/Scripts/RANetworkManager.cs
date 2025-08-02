@@ -1,4 +1,5 @@
 using Mirror;
+using ResourceModule;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,6 +43,8 @@ public class RANetworkManager : NetworkManager
 	private UtpTransport utpTransport;
 
 	public string relayJoinCode { get; private set; }
+
+	public PacketHandler packetHandler = new PacketHandler();
 
 	public override void Awake()
 	{
@@ -133,7 +136,7 @@ public class RANetworkManager : NetworkManager
 
 		CGameManager.Instance.roomEventBus.Publish(new GameRoomEvent_RoomCreated());
 
-		NetworkServer.RegisterHandler<ResponseReady>(OnResponseReady);
+		NetworkServer.RegisterHandler<GamePacket>(OnResponseReady);
 	}
 
 	/// <summary>
@@ -271,27 +274,94 @@ public class RANetworkManager : NetworkManager
 		base.OnStartClient();
 
 		NetworkClient.RegisterHandler<ResponseSetupInfo>(OnResponseSetupInfo);
+		NetworkClient.RegisterHandler<GamePacket>(OnReceivedPacket);
 
 	}
 	private void OnResponseSetupInfo(ResponseSetupInfo message)
 	{
 	}
-	private void OnResponseReady(NetworkConnectionToClient networkConnectionToClient, ResponseReady message)
+	private void OnResponseReady(NetworkConnectionToClient networkConnectionToClient, GamePacket message)
 	{
+
 	}
 
-	public void BroadcastMessage<T>(T message) where T : struct, NetworkMessage
+	public void BroadcastMessage<T>(T message) where T : PacketBase
 	{
 		foreach (NetworkConnectionToClient connection in NetworkServer.connections.Values)
 		{
-			connection.Send<T>(message);
+			//connection.Send<T>(message);
+			SendPacketToClient<T>(connection, message);
 		}
+	}
+
+	public void SendPacketToClient<T>(NetworkConnectionToClient connection, T packet) where T : PacketBase
+	{
+		if (connection == null || !connection.isReady)
+		{
+			Debug.LogWarning("Connection is null or not ready.");
+			return;
+		}
+		Debug.Log("SendPacketToClient");
+
+		byte[] data = SerializeUtil.SerializeToBytes<T>(packet);
+
+		//512 바이트씩 쪼개서 보낸다
+		int totalSize = data.Length;
+		int currentByteIndex = 0;
+		while (currentByteIndex < totalSize)
+		{
+			Debug.Log("SendPacketToClient" + currentByteIndex);
+			int currentByteSize = Mathf.Min(512, totalSize - currentByteIndex);
+			byte[] packetData = new byte[currentByteSize];
+			Array.Copy(data, currentByteIndex, packetData, 0, currentByteSize);
+
+			GamePacket gamePacket = new GamePacket
+			{
+				packetType = packet.GetPacketType(),
+				totalSize = totalSize,
+				currentByteIndex = currentByteIndex,
+				currentByteSize = currentByteSize,
+				data = packetData
+			};
+			Debug.Log(gamePacket.packetType + " " + gamePacket.currentByteIndex + " " + gamePacket.currentByteSize + " " + gamePacket.totalSize);
+
+			if(gamePacket.data == null)
+			{
+				Debug.LogError("GamePacket data is null.");
+			}
+
+			connection.Send(gamePacket);
+			currentByteIndex += currentByteSize;
+		}
+	}
+
+	public void OnReceivedPacket(GamePacket gamePacket)
+	{
+		if (gamePacket.data == null || gamePacket.data.Length == 0)
+		{
+			Debug.LogWarning("Received empty packet data.");
+			return;
+		}
+		if(packetHandler == null)
+		{
+			Debug.LogError("PacketHandler is null.");
+			return;
+		}
+		packetHandler.HandlePacket(gamePacket);
 	}
 }
 
 public struct ResponseSetupInfo : NetworkMessage
 {
+
 }
-public struct ResponseReady : NetworkMessage
+
+
+public struct GamePacket : NetworkMessage
 {
+	public ePacketType packetType;
+	public int totalSize;
+	public int currentByteIndex;
+	public int currentByteSize;
+	public byte[] data;
 }
