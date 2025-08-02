@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,13 @@ public class CGameUser
 	}
 }
 
+[Serializable]
+public class RoomOption
+{
+	public int buminCount = 1;
+	public int mapSize = 10;
+}
+
 
 public class CGameManager : SingletonMono<CGameManager>
 {
@@ -36,7 +44,7 @@ public class CGameManager : SingletonMono<CGameManager>
 
 	public int goalPrice = 0;
 
-
+		
 	public void Awake()
 	{
 		base.Awake();

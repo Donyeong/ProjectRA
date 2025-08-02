@@ -221,7 +221,8 @@ public class RANetworkManager : NetworkManager
 	{
 		base.OnClientConnect();
 		Debug.Log($"MyNetworkManager: {m_Username} Connected to Server!");
-		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
+		var panel = UIPanelManager.Instance.GetPanel<UIPanelLoading>();
+		UIPanelManager.Instance.HidePanel(panel);
 
 
 		VoiceChatManager.Instance.Join3DChannel(() =>

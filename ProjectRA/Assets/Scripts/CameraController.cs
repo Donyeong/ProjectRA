@@ -69,19 +69,27 @@ public class CameraController : SingletonMono<CameraController>
 
 	private void Update()
 	{
-		HandleRotation();
+		if (!UIPanelManager.Instance.isUILock)
+		{
+			HandleRotation();
+		}
 		if (Input.GetKeyDown(KeyCode.C))
 		{
 			if (cameraMode == eCameraMode.FollowPlayer)
 			{
 				cameraMode = eCameraMode.FreeCamera;
-				Cursor.lockState = CursorLockMode.None;
 			}
 			else
 			{
 				cameraMode = eCameraMode.FollowPlayer;
-				Cursor.lockState = CursorLockMode.Locked;
 			}
+		}
+		if(UIPanelManager.Instance.isUILock)
+		{
+			Cursor.lockState = CursorLockMode.None;
+		} else
+		{
+			Cursor.lockState = cameraMode == eCameraMode.FollowPlayer ? CursorLockMode.Locked : CursorLockMode.None;
 		}
 	}
 

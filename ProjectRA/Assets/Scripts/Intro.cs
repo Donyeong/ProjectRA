@@ -29,7 +29,8 @@ public class Intro : MonoBehaviour
 	public void IntroMain()
 	{
 		SceneManager.LoadScene("Lobby");
-		UIPanelManager.Instance.HidePanel<UIPanelLoading>();
+		var panel = UIPanelManager.Instance.GetPanel<UIPanelLoading>();
+		UIPanelManager.Instance.HidePanel(panel);
 	}
 
 	private async Task LoginAsync()

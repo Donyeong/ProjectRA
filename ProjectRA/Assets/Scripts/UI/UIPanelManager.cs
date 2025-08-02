@@ -1,40 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UIPanelManager : SingletonMono<UIPanelManager>
 {
 	public Transform canvas;
 	public Dictionary<string, UIPanelBase> dictUI = new Dictionary<string, UIPanelBase>();
-	public void ShowPanel<T>() where T : UIPanelBase
+
+	public List<UIPanelBase> opnedUI = new List<UIPanelBase>();
+	public bool isUILock => opnedUI.Count > 0;
+	public T GetPanel<T>() where T : UIPanelBase
 	{
 		string uiName = typeof(T).Name;
-		if(!dictUI.ContainsKey(uiName))
+		if (!dictUI.ContainsKey(uiName))
 		{
 			GameObject panelPrefab = ResourceManager.Instance.LoadResource<GameObject>($"UI/{uiName}");
 			GameObject ui = Instantiate(panelPrefab, canvas);
 			UIPanelBase uIPanelBase = ui.GetComponent<UIPanelBase>();
 			dictUI.Add(uiName, uIPanelBase);
+			ui.SetActive(false);
 		}
-
-		if(dictUI.TryGetValue(uiName, out UIPanelBase panel) && panel != null)
+		return dictUI[uiName] as T;
+	}
+	public void ShowPanel(UIPanelBase panel)
+	{
+		panel.gameObject.SetActive(true);
+		panel.OnShowPanel();
+		if(!opnedUI.Any(i => i == panel))
 		{
-			panel.gameObject.SetActive(true);
-			panel.OnShowPanel();
+			opnedUI.Add(panel);
 		}
 	}
-	public void HidePanel<T>() where T : UIPanelBase
+	public void HidePanel(UIPanelBase panel)
 	{
-		string uiName = typeof(T).Name;
-		if (!dictUI.ContainsKey(uiName))
+		panel.gameObject.SetActive(false);
+		panel.OnHidePanel();
+		if (opnedUI.Any(i => i == panel))
 		{
-			return;
-		}
-
-		if (dictUI.TryGetValue(uiName, out UIPanelBase panel) && panel != null)
-		{
-			panel.gameObject.SetActive(false);
-			panel.OnHidePanel();
+			opnedUI.Remove(panel);
 		}
 	}
 }
