@@ -3,7 +3,7 @@ using Mirror;
 using System;
 using UnityEngine;
 
-public class RAPLayerMovement : NetworkBehaviour
+public class RAPlayerMovement : NetworkBehaviour
 {
 	[Serializable]
 	public struct TransformSapshot

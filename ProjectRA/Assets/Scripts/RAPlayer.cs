@@ -47,7 +47,7 @@ public class RAPlayer : Actor
 	public Vector3 viewDir = Vector3.forward;
 
 	public PlayerAnimController playerAnimController;
-	public RAPLayerMovement playerMovement;
+	public RAPlayerMovement playerMovement;
 
 	public bool isCrouched {
 		get {
@@ -63,7 +63,7 @@ public class RAPlayer : Actor
 			ip = NetworkManager.singleton.networkAddress;
 		}
 		playerAnimController = GetComponentInChildren<PlayerAnimController>();
-		playerMovement = GetComponent<RAPLayerMovement>();
+		playerMovement = GetComponent<RAPlayerMovement>();
 	}
 
 	private void Start()

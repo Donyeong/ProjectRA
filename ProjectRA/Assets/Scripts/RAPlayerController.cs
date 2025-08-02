@@ -251,7 +251,7 @@ namespace RA {
 				GameObject newPullLine = Instantiate(pullLinePrefab, Vector3.zero, Quaternion.identity);
 				pullLine = newPullLine.GetComponent<PullLine>();
 			}
-			pullLine.point1 = Camera.main.transform.position + Vector3.down*0.3f + (CameraController.Instance.viewRot * Vector3.right * 0.2f);
+			pullLine.point1 = player.playerMovement.head.transform.position + Vector3.down*0.3f + (CameraController.Instance.viewRot * Vector3.right * 0.2f);
 			pullLine.point2 = pickDest;//Vector3.Lerp(pullLine.point1, pickDest, 0.5f);
 			pullLine.point3 = grabPoint;
 		}

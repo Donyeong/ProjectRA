@@ -88,10 +88,13 @@ public class Monster : Actor
 
 	public virtual void Update()
 	{
-		attackCooldown -= Time.deltaTime;
-		if (monsterFSM != null)
+		if (isServer)
 		{
-			monsterFSM.Update();
+			attackCooldown -= Time.deltaTime;
+			if (monsterFSM != null)
+			{
+				monsterFSM.Update();
+			}
 		}
 	}
 
