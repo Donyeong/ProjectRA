@@ -101,10 +101,10 @@ public class RAPlayerMovement : NetworkBehaviour
 		if (isLocalPlayer)
 		{
 			Vector3 input = Vector3.zero;
-			if (Input.GetKey(KeyCode.W)) input += Vector3.forward;
-			if (Input.GetKey(KeyCode.S)) input += Vector3.back;
-			if (Input.GetKey(KeyCode.A)) input += Vector3.left;
-			if (Input.GetKey(KeyCode.D)) input += Vector3.right;
+			if (RAInputManager.Instance.GetKey(eInputContentType.KeyboardMoveForward)) input += Vector3.forward;
+			if (RAInputManager.Instance.GetKey(eInputContentType.KeyboardMoveBack)) input += Vector3.back;
+			if (RAInputManager.Instance.GetKey(eInputContentType.KeyboardMoveLeft)) input += Vector3.left;
+			if (RAInputManager.Instance.GetKey(eInputContentType.KeyboardMoveRight)) input += Vector3.right;
 
 			input = CameraController.Instance.viewRot * input;
 			input.y = 0;
@@ -114,14 +114,14 @@ public class RAPlayerMovement : NetworkBehaviour
 			character.SetMovementDirection(input);
 
 
-			if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C))
+			if (RAInputManager.Instance.GetKeyDown(eInputContentType.Crouch))
 				character.Crouch();
-			else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.C))
+			else if (RAInputManager.Instance.GetKeyUp(eInputContentType.Crouch))
 				character.UnCrouch();
 
-			if (Input.GetButtonDown("Jump"))
+			if (RAInputManager.Instance.GetKeyDown(eInputContentType.Jump))
 				character.Jump();
-			else if (Input.GetButtonUp("Jump"))
+			else if (RAInputManager.Instance.GetKeyUp(eInputContentType.Jump))
 				character.StopJumping();
 			//if (Input.GetKeyDown(KeyCode.Space)) moveVelocity += Vector3.up * 2f;
 
@@ -142,7 +142,7 @@ public class RAPlayerMovement : NetworkBehaviour
 			player.playerAnimController.SetRun(true);
 
 			bool isRun = false;
-			if(input != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
+			if(input != Vector3.zero && RAInputManager.Instance.GetKey(eInputContentType.Sprint))
 			{
 				if(player.UseStamina(Time.deltaTime * 15))
 				{

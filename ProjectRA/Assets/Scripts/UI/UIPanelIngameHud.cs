@@ -9,6 +9,7 @@ public class UIPanelIngameHud : MonoBehaviour
     public TMP_Text price;
     public GameObject interactInfo;
 	public TMP_Text interactInfoText;
+	public Image interactKeyIcon;
 	public GameObject propPrice;
 	public TMP_Text propPriceText;
 	public RAProp target = null;
@@ -100,6 +101,8 @@ public class UIPanelIngameHud : MonoBehaviour
 	{
         interactInfo.SetActive(true);
 		interactInfoText.SetText(e.interactableObject.GetInteractText());
+		var inputInfo = RAInputManager.Instance.GetKeyInfo(eInputContentType.Interact);
+		interactKeyIcon.sprite = RAInputManager.Instance.GetIcon(inputInfo.keyCode);
 	}
 
 	public void OnInteractAimOut(GameRoomEvent_OnInteractAimOut e)

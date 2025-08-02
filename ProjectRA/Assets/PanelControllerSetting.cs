@@ -7,6 +7,8 @@ public class PanelControllerSetting : SettingUIBase
 	public GameObject slotOrigin;
 
 	public List<UIKeySettingSLot> keySettingSlots = new List<UIKeySettingSLot>();
+
+	public UIKeySettingSLot currentChangeMode = null;
 	public override void Init()
 	{
 		base.Init();
@@ -16,6 +18,40 @@ public class PanelControllerSetting : SettingUIBase
 	{
 		base.OnOpen();
 		SetupKey();
+	}
+
+
+	public void Update()
+	{
+		if (currentChangeMode != null)
+		{
+			if (Input.GetKeyDown(KeyCode.Escape))
+			{
+				currentChangeMode.Setup(currentChangeMode.info);
+				currentChangeMode = null;
+				return;
+			}
+
+			if (Input.anyKeyDown)
+			{
+				KeyCode keyCode = KeyCode.None;
+				foreach (KeyCode code in System.Enum.GetValues(typeof(KeyCode)))
+				{
+					if (Input.GetKeyDown(code))
+					{
+						keyCode = code;
+						break;
+					}
+				}
+
+				if (keyCode != KeyCode.None)
+				{
+					currentChangeMode.info.keyCode = keyCode;
+					currentChangeMode.Setup(currentChangeMode.info);
+					currentChangeMode = null;
+				}
+			}
+		}
 	}
 
 	public void Clear()
@@ -41,13 +77,18 @@ public class PanelControllerSetting : SettingUIBase
 				slotComponent.Setup(inputInfo);
 				keySettingSlots.Add(slotComponent);
 				slot.SetActive(true);
-				slotComponent.button.onClick.AddListener(() => OnSlotClick(inputInfo));
+				slotComponent.button.onClick.AddListener(() => OnSlotClick(slotComponent));
 			}
 		}
 	}
 
-	public void OnSlotClick(InputInfo inputInfo)
+	public void OnSlotClick(UIKeySettingSLot slot)
 	{
-
+		if(currentChangeMode != null)
+		{
+			currentChangeMode.Setup(slot.info);
+		}
+		currentChangeMode = slot;
+		currentChangeMode.SetChangeMode();
 	}
 }

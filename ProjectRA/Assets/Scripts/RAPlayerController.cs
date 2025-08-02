@@ -20,6 +20,7 @@ namespace RA {
 
 		public float grapPowerRangeMax = 1f;
 		public float grapPowerRangeMin = 0f;
+		[SyncVar]
 		public float grapRange = 1f;
 		public float strength = 300;
 		public float cartStrength = 3000;
@@ -83,6 +84,17 @@ namespace RA {
 					onAimProp = null;
 				}
 			}
+
+			if(RAInputManager.Instance.GetKey(eInputContentType.GrabRangeUp))
+			{
+				grapRange += Time.deltaTime * 2f;
+				if (grapRange > grapMaxRange) grapRange = grapMaxRange;
+			}
+			if (RAInputManager.Instance.GetKey(eInputContentType.GrabRangeDown))
+			{
+				grapRange -= Time.deltaTime * 2f;
+				if (grapRange < grapPowerRangeMin) grapRange = grapPowerRangeMin;
+			}
 		}
 
 		public void OnHitPropCollider(RaycastHit hit)
@@ -139,7 +151,7 @@ namespace RA {
 		{
 			CameraRaycast(out RaycastHit hit);
 
-			if(isOnAimInteractable && Input.GetKeyDown(KeyCode.E))
+			if (isOnAimInteractable && RAInputManager.Instance.GetKeyDown(eInputContentType.Interact))
 			{
 				// interactableObject의 NetworkIdentity에서 netId를 얻어서 넘김
 				var netIdentity = interactableObject.GetComponent<NetworkIdentity>();
@@ -150,7 +162,7 @@ namespace RA {
 				//interactableObject.OnInteract();
 			}
 
-			if(isOnAimProp && Input.GetKeyDown(KeyCode.Mouse0) && !isGrabbed)
+			if (isOnAimProp && RAInputManager.Instance.GetKeyDown(eInputContentType.Grab) && !isGrabbed)
 			{
 				Vector3 grabPointLocal = onAimProp.transform.InverseTransformPoint(hit.point);
 				CmdPickUpProp(onAimProp.GetComponent<NetworkIdentity>(), grabPointLocal);
@@ -159,7 +171,7 @@ namespace RA {
 				CGameManager.Instance.roomEventBus.Publish(ev);
 			}
 
-			if(Input.GetKey(KeyCode.Mouse0) == false && isGrabbed)
+			if(RAInputManager.Instance.GetKey(eInputContentType.Grab) == false && isGrabbed)
 			{
 				GameRoomEvent_OnDropProp ev = new GameRoomEvent_OnDropProp();
 				CGameManager.Instance.roomEventBus.Publish(ev);

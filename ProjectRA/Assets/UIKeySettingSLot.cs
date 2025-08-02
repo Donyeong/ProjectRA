@@ -21,7 +21,9 @@ public class UIKeySettingSLot : MonoBehaviour
 	}
 
 
-
-
+	public void SetChangeMode()
+	{
+		icon.sprite = RAInputManager.Instance.GetIcon(KeyCode.Question);
+	}
 }
 
