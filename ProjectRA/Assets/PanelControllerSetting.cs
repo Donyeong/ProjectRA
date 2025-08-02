@@ -4,15 +4,46 @@ using UnityEngine;
 
 public class PanelControllerSetting : SettingUIBase
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public GameObject slotOrigin;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public List<UIKeySettingSLot> keySettingSlots = new List<UIKeySettingSLot>();
+	public override void Init()
+	{
+		base.Init();
+	}
+
+	public override void OnOpen()
+	{
+		base.OnOpen();
+		SetupKey();
+	}
+
+	public void Clear()
+	{
+		foreach (var slot in keySettingSlots)
+		{
+			Destroy(slot.gameObject);
+		}
+		keySettingSlots.Clear();
+	}
+
+	public void SetupKey()
+	{
+		Clear();
+		slotOrigin.SetActive(false);
+		foreach (var key in RAInputManager.Instance.keySetting)
+		{
+			InputInfo inputInfo = key.Value;
+			if (inputInfo.inputType == eInputType.Button)
+			{
+				var slot = Instantiate(slotOrigin, slotOrigin.transform.parent);
+				var slotComponent = slot.GetComponent<UIKeySettingSLot>();
+				slotComponent.Setup();
+				slotComponent.icon.sprite = RAInputManager.Instance.GetIcon(inputInfo.keyCode);
+				slotComponent.keyType.text = key.Key.ToString();
+				keySettingSlots.Add(slotComponent);
+				slot.SetActive(true);
+			}
+		}
+	}
 }
