@@ -45,7 +45,9 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 	{
 		Debug.Log("CmdGameMapStart");
 		Generate();
-		SpawnMonster();
+		mapGenerator.GenerateRoomObject();
+		lobbyMap.SetActive(false);
+		//SpawnMonster();
 		RpcGameMapStart(mapGenerator.generator.rooms);
 	}
 
@@ -54,8 +56,11 @@ public class MapManager : SingletonNetworkBehaviour<MapManager>
 	{
 		Debug.Log("RpcGameMapStart");
 		mapGenerator.generator.rooms = roomInfos;
-		lobbyMap.SetActive(false);
-		mapGenerator.GenerateRoomObject();
+		if (!isServer)
+		{
+			lobbyMap.SetActive(false);
+			mapGenerator.GenerateRoomObject();
+		}
 		navMeshSurface.BuildNavMesh();
 	}
 

@@ -138,86 +138,6 @@ namespace RA {
 		public void PlayerInput()
 		{
 			CameraRaycast(out RaycastHit hit);
-			/*RaycastHit hit;
-			bool isSelected = false;
-			bool intObjSelected = false;
-			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 10f))
-			{
-				if(hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Interactable")) {
-					InteractableObject intObj = hit.collider.GetComponent<InteractableObject>();
-					intObjSelected = true;
-					if (interactableObject != intObj)
-					{
-						if (interactableObject != null)
-						{
-							interactableObject.OnOutAim();
-							GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
-							CGameManager.Instance.roomEventBus.Publish(ev);
-						}
-						interactableObject = intObj;
-						interactableObject.OnInAim();
-						GameRoomEvent_OnInteractAimIn e = new GameRoomEvent_OnInteractAimIn() { interactableObject = interactableObject };
-						CGameManager.Instance.roomEventBus.Publish(e);
-					}
-
-					if (Input.GetKeyDown(KeyCode.E))
-					{
-						interactableObject.OnInteract();
-					}
-				}
-				if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("PropCollider"))
-				{
-					RAPropCollider propCol = hit.collider.GetComponent<RAPropCollider>();
-					if (propCol != null)
-					{
-						isSelected = true;
-						RAProp prop = propCol.prop;
-						if (viewTargetProp != prop)
-						{
-							if (viewTargetProp != null)
-							{
-								viewTargetProp.Select(false);
-							}
-							viewTargetProp = prop;
-							viewTargetProp.Select(true);
-						}
-						// Prop ���̾ �ִ� ������Ʈ�� Ŭ������ ��
-						if (Input.GetKeyDown(KeyCode.Mouse0))
-						{
-							Vector3 grabPointLocal = propCol.prop.transform.InverseTransformPoint(hit.point);
-							CmdPickUpProp(prop.GetComponent<NetworkIdentity>(), grabPointLocal);
-
-							GameRoomEvent_OnGrabProp ev = new GameRoomEvent_OnGrabProp();
-							ev.targetProp = prop;
-							CGameManager.Instance.roomEventBus.Publish(ev);
-						}
-					}
-				}
-			}
-			if(!isSelected)
-			{
-				if (viewTargetProp != null)
-				{
-					viewTargetProp.Select(false);
-					viewTargetProp = null;
-				}
-			}
-			if (!intObjSelected)
-			{
-				if (interactableObject != null)
-				{
-					interactableObject.OnOutAim();
-					GameRoomEvent_OnInteractAimOut ev = new GameRoomEvent_OnInteractAimOut();
-					CGameManager.Instance.roomEventBus.Publish(ev);
-					interactableObject = null;
-				}
-			}
-			if (Input.GetKeyUp(KeyCode.Mouse0))
-			{
-				GameRoomEvent_OnDropProp ev = new GameRoomEvent_OnDropProp();
-				CGameManager.Instance.roomEventBus.Publish(ev);
-				CmdDropProp();
-			}*/
 
 			if(isOnAimInteractable && Input.GetKeyDown(KeyCode.E))
 			{
@@ -249,7 +169,7 @@ namespace RA {
 
 		Vector3 GetPickDest()
 		{
-			Vector3 aimTarget = Camera.main.transform.position + Camera.main.transform.forward * grapRange;
+			Vector3 aimTarget = player.playerMovement.head.transform.position  + (player.viewDir.normalized) * grapRange;
 			return aimTarget;
 		}
 
